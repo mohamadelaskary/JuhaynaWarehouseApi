@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <location path="." inheritInChildApplications="false">
+    <system.webServer>
+      <handlers>
+        <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModuleV2" resourceType="Unspecified" />
+      </handlers>
+      <aspNetCore processPath="dotnet" arguments=".\GBSWarehouse.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" hostingModel="inprocess" />
+    </system.webServer>
+  </location>
+    <system.webServer>
+        <directoryBrowse enabled="true" showFlags="Date, Time, Size, Extension, LongDate" />
+        <security>
+            <requestFiltering>
+                <requestLimits maxAllowedContentLength="4294967295" maxUrl="4294967295" maxQueryString="4294967295" />
+            </requestFiltering>
+        </security>
+    </system.webServer>
+    <system.web>
+        <compilation batchTimeout="4500" defaultLanguage="c#" maxBatchGeneratedFileSize="2147483647" maxBatchSize="2147483647" />
+        <sessionState timeout="240" />
+    </system.web>
+</configuration>
+<!--ProjectGuid: c11ac021-e322-449e-8ab5-41aca14aaff3-->
