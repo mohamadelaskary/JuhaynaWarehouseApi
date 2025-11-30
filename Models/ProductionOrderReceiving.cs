@@ -44,5 +44,6 @@ namespace GBSWarehouse.Models
         public DateTime? DateTimePutAway { get; set; }
         public string DeviceSerialNoPutAway { get; set; }
         public bool? IsExcessProductionReceiving { get; set; }
+        public bool? IsAddedInSap { get; set; }
     }
 }

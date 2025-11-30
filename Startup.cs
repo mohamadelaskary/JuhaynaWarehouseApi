@@ -1,12 +1,13 @@
+using GBSWarehouse.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,24 +25,27 @@ namespace GBSWarehouse
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
                     Title = "GBS Warehouse API",
-                    Version = "V1"
-
+                    Version = "v1"
                 });
             });
-            //services.AddCors(options => options.AddDefaultPolicy(
-            //   builder => builder.AllowAnyOrigin()
-            //   ));
-            //services.AddSession(options =>
-            //{
-            //    options.IdleTimeout = TimeSpan.FromMinutes(3000);
-            //});
+
             services.AddControllers();
+            services.AddDbContext<GBSWarehouseContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -49,23 +53,32 @@ namespace GBSWarehouse
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GBS Warehouse API v1");
+                    c.RoutePrefix = string.Empty; // Swagger UI ??? ?????? ??????? "/"
+                });
             }
-            else app.UseHsts();
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            else
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "GBS Warehouse API");
-            });
-            //app.UseCors();
-            //app.UseSession();
+                app.UseHsts();
+            }
+
+
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
+          //  if (env.IsDevelopment()) { 
+                
+           // }   
+
+            app.UseCors("AllowAll");
+
 
             app.UseEndpoints(endpoints =>
             {
@@ -73,4 +86,5 @@ namespace GBSWarehouse
             });
         }
     }
+
 }

@@ -355,6 +355,10 @@ namespace GBSWarehouse.Helpers
         public bool? IsCreatedOnSap { get; set; }
         public bool? IsReleased { get; set; }
         public bool HasDetails { get; set; }
+        public bool? IsClosed { get; set; }
+
+        public long UserIdCreated { get; set; }
+        public string? UserNameCreated { get; set; }
     }
     public class ProcessOrdersDetailsParam
     {

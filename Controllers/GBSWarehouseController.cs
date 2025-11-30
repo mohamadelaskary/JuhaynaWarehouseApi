@@ -1,20 +1,27 @@
-﻿using GBSWarehouse.Helpers;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Presentation;
+using GBSWarehouse.Helpers;
 using GBSWarehouse.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data;
-using EntityState = Microsoft.EntityFrameworkCore.EntityState;
-
-using JWT.Builder;
+using GBSWarehouse.Models.Dtos;
+using JWT;
 using JWT.Algorithms;
+using JWT.Builder;
 using JWT.Exceptions;
 using JWT.Serializers;
-using JWT;
-
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Nancy.Json;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using EntityState = Microsoft.EntityFrameworkCore.EntityState;
 
 namespace GBSWarehouse.Controllers
 {
@@ -420,7 +427,7 @@ namespace GBSWarehouse.Controllers
         #endregion
         #region SAP Team Basic Data Setup
         [Route("[action]")]
-        [HttpGet]
+        [HttpPost]
         public object SapProductAddList([FromBody] SapProductAddListParam model)
         {
             ResponseStatus responseStatus = new();
@@ -2754,7 +2761,7 @@ namespace GBSWarehouse.Controllers
                 {
                     responseStatus.StatusCode = 401;
                     responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((model.applang == "ar") ? "كود نوع الطلب " + model.OrderTypeCode + " خاطئ. أو لا يتعلق بالمصنع الخاص بأمر الشغل" : "Order type code " + model.OrderTypeCode + " is wrong. Or is not related to the process order planet code");
+                    responseStatus.StatusMessage = ((model.applang == "ar") ? "كود نوع الطلب " + model.OrderTypeCode + " خاطئ. أو لا يتعلق بالمصنع الخاص بأمر الشغل" : "Order type code " + model.OrderTypeCode + " is wrong. Or is not related to the process order plant code");
                     return new { responseStatus, GetList };
                 }
                 if (!DBContext.Products.Any(x => x.ProductCode == model.ProductCode))
@@ -3190,12 +3197,14 @@ namespace GBSWarehouse.Controllers
             List<ProcessOrderDetails> processOrderDetails = new();
             try
             {
-                var GetProductionOrderDetails = DBContext.ProductionOrderDetails.Select(x => x.ProductionOrderId).Distinct().ToList();
+                var GetProductionOrderDetails = DBContext.ProductionOrderDetails.Select(pod=>pod.ProductionOrderId).Distinct().ToList();
 
                 GetList = (from b in DBContext.ProductionOrders
                            join p in DBContext.Products on b.ProductCode equals p.ProductCode
                            join x in DBContext.Plants on b.PlantCode equals x.PlantCode
                            join o in DBContext.OrderTypes on b.OrderTypeCode equals o.OrderTypeCode
+                           join u in DBContext.Users on b.UserIdAdd equals u.UserId
+                           where b.IsClosed == false
                            select new ProcessOrdersParam
                            {
                                PlantId = x.PlantId,
@@ -3207,7 +3216,8 @@ namespace GBSWarehouse.Controllers
                                ProductId = p.ProductId,
                                ProductCode = p.ProductCode,
                                ProductDesc = p.ProductDesc,
-
+                               UserIdCreated = u.UserId,
+                               UserNameCreated = u.UserName,
                                ProductionOrderId = b.ProductionOrderId,
                                SapOrderId = b.SapOrderId,
                                Qty = b.Qty,
@@ -3218,7 +3228,7 @@ namespace GBSWarehouse.Controllers
                                IsReleased = b.IsReleased,
                                HasDetails = GetProductionOrderDetails.Contains(b.ProductionOrderId)
                            }).Distinct().ToList();
-
+                        
                 processOrderDetails = (from b in DBContext.ProductionOrderDetails
                                        join p in DBContext.Products on b.ProductCode equals p.ProductCode
                                        join x in DBContext.ProductionLines on b.ProductionLineId equals x.ProductionLineId
@@ -3285,7 +3295,7 @@ namespace GBSWarehouse.Controllers
                                            ProductionLineCode = l.ProductionLineCode,
                                            Qty = b.Qty ?? 0,
                                            QtyCartoon = (b.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
-                                           IsClosedBatch = b.IsClosedBatch ?? false,
+                                           IsClosedBatch = b.IsClosedBatch,
                                            IsReleased = b.IsReleased ?? false,
                                            BatchStatus = b.BatchStatus
                                        }).Distinct().ToList();
@@ -3370,7 +3380,7 @@ namespace GBSWarehouse.Controllers
                                                                 ProductionLineCode = l.ProductionLineCode,
                                                                 BatchQty = b.Qty ?? 0,
                                                                 BatchQtyCartoon = (b.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
-                                                                IsClosedBatch = b.IsClosedBatch ?? false,
+                                                                IsClosedBatch = b.IsClosedBatch,
                                                                 IsReleased = b.IsReleased ?? false,
                                                                 BatchStatus = b.BatchStatus,
                                                                 ProductCode = p.ProductCode,
@@ -3441,6 +3451,94 @@ namespace GBSWarehouse.Controllers
                 responseStatus,
                 GetList
             };
+        }
+        [Route("[action]")]
+        [HttpPost]
+        public UpdateProcessOrderDto UpdateProcessOrderQuantity(UpdateProcessOrderBody body)
+        {
+            var response = new UpdateProcessOrderDto();
+            try
+            {
+                if(body.processOrderId == null || body.processOrderId <= 0)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing process order id","لم يتم إدخال معرف أمر الإنتاج", body.appLang);
+                    return response;
+                }
+                if (body.newQuantity == null || body.newQuantity <= 0)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing new quantity", "لم يتم إدخال الكمية الجديدة", body.appLang);
+                    return response;
+                }
+                var productionOrder = DBContext.ProductionOrders.FirstOrDefault(x => x.ProductionOrderId == body.processOrderId);
+                
+                
+                if (productionOrder == null)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("Process order not found", "لم يتم العثور على أمر الإنتاج", body.appLang);
+                    return response;
+                }
+                var product = DBContext.Products.FirstOrDefault(x => x.ProductCode == productionOrder.ProductCode);
+                int noOfItemPerCarton = (int)(product.NumeratorforConversionPac / product.DenominatorforConversionPac);
+                int orderCartonQty = (int)(productionOrder.Qty / noOfItemPerCarton);
+                if (productionOrder.IsClosed == true)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("Process order is already closed", "تم إغلاق أمر الإنتاج بالفعل", body.appLang);
+                    return response;
+                }
+                if (orderCartonQty>= body.newQuantity)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("New quantity must be greater than the current quantity", "يجب أن تكون الكمية الجديدة أكبر من الكمية الحالية", body.appLang);
+                    return response;
+                }
+                productionOrder.Qty = body.newQuantity * noOfItemPerCarton;
+                DBContext.ProductionOrders.Update(productionOrder);
+                DBContext.SaveChanges();
+                response.responseStatus = ResponseStatusHelper.SuccessResponseStatus("Process order quantity updated successfully", "تم تحديث كمية أمر الإنتاج بنجاح", body.appLang);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.responseStatus = ResponseStatusHelper.ExceptionResponseStatus(ex.Message, body.appLang);
+                Console.WriteLine(ex.InnerException);
+            }
+            return response;
+        }
+        [Route("[action]")]
+        [HttpPost]
+        public UpdateProcessOrderDto CloseProcessOrder(CloseProcessOrderBody body)
+        {
+            var response = new UpdateProcessOrderDto();
+            try
+            {
+                if (body.processOrderId == null || body.processOrderId <= 0)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing process order id", "لم يتم إدخال معرف أمر الإنتاج", body.appLang);
+                    return response;
+                }
+               
+                var productionOrder = DBContext.ProductionOrders.FirstOrDefault(po => po.ProductionOrderId == body.processOrderId);
+                if (productionOrder == null)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("Process order not found", "لم يتم العثور على أمر الإنتاج", body.appLang);
+                    return response;
+                }
+                if(productionOrder.IsClosed == true)
+                {
+                    response.responseStatus = ResponseStatusHelper.ErrorResponseStatus("Process order is already closed", "تم إغلاق أمر الإنتاج بالفعل", body.appLang);
+                    return response;
+                }
+
+                productionOrder.IsClosed = true;
+                DBContext.ProductionOrders.Update(productionOrder);
+                DBContext.SaveChanges();
+                response.responseStatus = ResponseStatusHelper.SuccessResponseStatus("Process order quantity closed successfully", "تم غلق كمية أمر الإنتاج بنجاح", body.appLang);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.responseStatus = ResponseStatusHelper.ExceptionResponseStatus(ex.Message, body.appLang);
+            }
+            return response;
         }
         [Route("[action]")]
         [HttpGet]
@@ -3526,7 +3624,7 @@ namespace GBSWarehouse.Controllers
         [Route("[action]")]
         [HttpPost]
         // This API is used by mobile to try to create a production order first in SAP and then create it here.
-        public object CreateProcessOrder([FromBody] CreateProcessOrderParam model)
+        public async Task<object> CreateProcessOrder([FromBody] CreateProcessOrderParam model)
         {
             ResponseStatus responseStatus = new();
 
@@ -3589,12 +3687,17 @@ namespace GBSWarehouse.Controllers
                     responseStatus.StatusMessage = ((model.applang == "ar") ? "لم يتم إدخال كود نوع الطلب" : "Missing order type code");
                     return new { responseStatus, processOrder };
                 }
-
+                var OrderType = DBContext.OrderTypes.FirstOrDefault(x => x.OrderTypeCode == model.OrderTypeCode);
+                Console.WriteLine("OrderType: " + OrderType.OrderTypeCode);
+                Console.WriteLine("OrderTypePlantCode: " + OrderType.PlantCode);
+                Console.WriteLine("PlantCode: " + model.PlantCode);
+                Console.WriteLine("IsEqual: " + (OrderType.PlantCode == model.PlantCode));
                 if (!DBContext.OrderTypes.Any(x => x.OrderTypeCode == model.OrderTypeCode && x.PlantCode == model.PlantCode))
                 {
                     responseStatus.StatusCode = 401;
                     responseStatus.IsSuccess = false;
                     responseStatus.StatusMessage = ((model.applang == "ar") ? "كود نوع الطلب " + model.OrderTypeCode + " خاطئ. أو لا يتعلق بالمصنع الخاص بأمر الشغل" : "Order type code " + model.OrderTypeCode + " is wrong. Or is not related to the process order planet code");
+                    
                     return new { responseStatus, processOrder };
                 }
                 if (!DBContext.Products.Any(x => x.ProductCode == model.ProductCode))
@@ -3622,11 +3725,28 @@ namespace GBSWarehouse.Controllers
 
                 long SapOrderId = -1;
                 bool IsCreatedOnSap = false;
-                CreateSapOrderResponse Response = SAPIntegrationAPI.CreateSapOrder(model.ProductCode, model.PlantCode, model.PlantCode, model.OrderTypeCode, model.QtyCartoon.Value, DateTime.Now.ToString("dd.mm.yyyy"), model.BasicFinishDate.Value.ToString("dd.mm.yyyy"), model.BaseUnitofMeasure, model.ProductionVersion);
+                CreateSapOrderResponse Response = await SapService.CreateSapOrderAsync(
+                    new CreateSapOrderParameters { PLNBEZ= model.ProductCode, WERKS= model.PlantCode, PWERK=model.PlantCode, AUART=model.OrderTypeCode, GAMNG=model.QtyCartoon.Value, GSTRP= model.BasicFinishDate.Value.ToString("dd.MM.yyyy"), GLTRP=model.BasicFinishDate.Value.ToString("dd.MM.yyyy"), GMEIN=model.BaseUnitofMeasure, VERID="" });
+
+                //  CreateSapOrderResponse Response = SAPIntegrationAPI.CreateSapOrder(model.ProductCode, model.PlantCode, model.PlantCode, model.OrderTypeCode, model.QtyCartoon.Value, DateTime.Now.ToString("dd.mm.yyyy"), model.BasicFinishDate.Value.ToString("dd.mm.yyyy"), model.BaseUnitofMeasure, model.ProductionVersion);
                 if (Response != null && Response.messageText == "Created")
                 {
                     IsCreatedOnSap = true;
                     SapOrderId = long.Parse(Response.AUFNR);
+                }
+                else
+                {
+                    return new
+                    {
+                        responseStatus = new ResponseStatus
+                        {
+                            StatusCode = 500,
+                            IsSuccess = false,
+                            StatusMessage = ((model.applang == "ar") ? "خطأ من ساب" : "Error from sap") + "\n" + Response.messageText + " - " + Response.message,
+                            ErrorMessage = Response.messageText + " - " + Response.message
+                        },
+                        processOrder
+                    };
                 }
                 var Product = DBContext.Products.Where(c => c.ProductCode == model.ProductCode).FirstOrDefault();
                 ProductionOrder entity = new()
@@ -3804,11 +3924,17 @@ namespace GBSWarehouse.Controllers
                         PlantCode = productionOrder.PlantCode,
                         UserIdAdd = model.UserID,
                         DateTimeAdd = DateTime.Now,
-                        BatchStatus = "Created",
-                        ProductCode = productionOrder.ProductCode
+                        BatchStatus = "Released",
+                        ProductCode = productionOrder.ProductCode,
+                        IsReleased = true,
+                        DateTimeRelease = DateTime.Now,
+                        UserIdRelease = model.UserID,
+                        DeviceSerialNo = model.DeviceSerialNo,
+                        DeviceSerialNoRelease = model.DeviceSerialNo
+
                     };
                     DBContext.ProductionOrderDetails.Add(productionOrderDetail);
-
+                    DBContext.SaveChanges();
                     BatchList batchList = new()
                     {
                         BatchNo = item.BatchNo,
@@ -3817,18 +3943,40 @@ namespace GBSWarehouse.Controllers
                         ProductionDate = item.ProductionDate,
                         ProductionLineId = GetProductionLineData.ProductionLineId,
                         QtyProduction = (item.QtyCartoon * (long)((productData.NumeratorforConversionPac ?? 0) / (productData.DenominatorforConversionPac ?? 0))),
-                        SaporderId = productionOrder.SapOrderId ?? -1
+                        SaporderId = productionOrder.SapOrderId ?? -1,
+                        ProductionOrderDetailsId = productionOrderDetail.OrderDetailsId
+
                     };
                     DBContext.BatchLists.Add(batchList);
+                    
+                    ProductionLineWip productionLineWip = new()
+                {
+                    BatchNo = item.BatchNo,
+                    DateTimeAdd = DateTime.Now,
+                    DeviceSerialNo = model.DeviceSerialNo,
+                    OrderDetailsId = productionOrderDetail.OrderDetailsId,
+                    PlantCode = productionOrderDetail.PlantCode,
+                    ProductionDate = productionOrderDetail.ProductionDate,
+                    ProductionLineId = productionOrderDetail.ProductionLineId,
+                    ProductionOrderId = productionOrderDetail.ProductionOrderId,
+                    Qty = productionOrderDetail.Qty,
+                    SapOrderId = productionOrderDetail.SapOrderId,
+                    UserIdAdd = model.UserID
+
+                };
+                DBContext.ProductionLineWips.Add(productionLineWip);
 
                 }
                 DBContext.SaveChanges();
+                
+
                 var GetProductionOrderDetails = DBContext.ProductionOrderDetails.Select(x => x.ProductionOrderId).Distinct().ToList();
 
                 processOrder = (from b in DBContext.ProductionOrders
                                 join p in DBContext.Products on b.ProductCode equals p.ProductCode
                                 join x in DBContext.Plants on b.PlantCode equals x.PlantCode
                                 join o in DBContext.OrderTypes on b.OrderTypeCode equals o.OrderTypeCode
+                                join u in DBContext.Users on b.UserIdAdd equals u.UserId
                                 where b.ProductionOrderId == productionOrder.ProductionOrderId
                                 select new ProcessOrdersParam
                                 {
@@ -3841,7 +3989,8 @@ namespace GBSWarehouse.Controllers
                                     ProductId = p.ProductId,
                                     ProductCode = p.ProductCode,
                                     ProductDesc = p.ProductDesc,
-
+                                    UserIdCreated = u.UserId,
+                                    UserNameCreated = u.UserName,
                                     ProductionOrderId = b.ProductionOrderId,
                                     SapOrderId = b.SapOrderId,
                                     Qty = b.Qty,
@@ -3896,8 +4045,12 @@ namespace GBSWarehouse.Controllers
             }
             return new { responseStatus, processOrder, processOrderDetails };
         }
+
+
         [Route("[action]")]
         [HttpPost]
+
+        // This API is now cancelled 
         public object ReleaseBatch([FromBody] ReleaseBatchParam model)
         {
             ResponseStatus responseStatus = new();
@@ -4265,7 +4418,9 @@ namespace GBSWarehouse.Controllers
                     item.BatchStatus = "Closed";
                     DBContext.ProductionOrderDetails.Update(item);
                     DBContext.SaveChanges();
-
+                    productionOrder.IsClosed = !DBContext.ProductionOrderDetails
+                        .Any(x => x.ProductionOrderId == productionOrder.ProductionOrderId && x.IsClosedBatch == false);
+                    DBContext.ProductionOrders.Update(productionOrder);
                     var GetProductionLineWip = DBContext.ProductionLineWips.Where(x => x.ProductionLineId == item.ProductionLineId && x.ProductionOrderId == item.ProductionOrderId && x.BatchNo == item.BatchNo).FirstOrDefault();
                     DBContext.ProductionLineWips.Remove(GetProductionLineWip);
                     DBContext.SaveChanges();
@@ -4370,7 +4525,7 @@ namespace GBSWarehouse.Controllers
                                              join x in DBContext.Plants on l.PlantCode equals x.PlantCode
                                              join o in DBContext.OrderTypes on l.OrderTypeCode equals o.OrderTypeCode
                                              join ln in DBContext.ProductionLines on d.ProductionLineId equals ln.ProductionLineId
-                                             where d.IsReleased == true && d.IsClosedBatch != true
+                                             where d.IsReleased == true && d.IsClosedBatch != true && l.IsClosed != true
                                              select new
                                              {
                                                  PlantId = x.PlantId,
@@ -4381,7 +4536,7 @@ namespace GBSWarehouse.Controllers
                                                  OrderTypeDesc = o.OrderTypeDesc,
                                                  ProductId = p.ProductId,
                                                  ProductCode = p.ProductCode,
-                                                 ProductDesc = p.ProductDesc,
+                                                 ProductDesc = (applang == "ar")?p.ProductDescAr:p.ProductDesc,
                                                  ProductionOrderId = d.ProductionOrderId,
                                                  SapOrderId = d.SapOrderId,
                                                  ProductionOrderQty = l.Qty,
@@ -4397,9 +4552,12 @@ namespace GBSWarehouse.Controllers
                                                  BatchStatus = d.BatchStatus,
                                                  IsReceived = d.IsReceived,
                                                  ReceivedQty = d.ReceivedQty,
+                                                 ReceivedQtyCartoon = (d.ReceivedQty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
                                                  ProductionLineId = ln.ProductionLineId,
                                                  ProductionLineCode = ln.ProductionLineCode,
-                                                 ProductionLineDesc = ln.ProductionLineDesc
+                                                 ProductionLineDesc = ln.ProductionLineDesc,
+                                                 noCartoonPerPallet = (long)((p.NumeratorforConversionPal ?? 0) / (p.DenominatorforConversionPal ?? 0))
+
                                              }).Distinct().ToList();
 
 
@@ -4533,7 +4691,7 @@ namespace GBSWarehouse.Controllers
                                                     OrderTypeDesc = o.OrderTypeDesc,
                                                     ProductId = p.ProductId,
                                                     ProductCode = p.ProductCode,
-                                                    ProductDesc = p.ProductDesc,
+                                                    ProductDesc = (applang == "ar") ? p.ProductDescAr : p.ProductDesc,
                                                     ProductionOrderId = b.ProductionOrderId,
                                                     SapOrderId = b.SapOrderId,
                                                     ProductionOrderQty = l.Qty,
@@ -4675,7 +4833,7 @@ namespace GBSWarehouse.Controllers
                                                     OrderTypeDesc = o.OrderTypeDesc,
                                                     ProductId = p.ProductId,
                                                     ProductCode = p.ProductCode,
-                                                    ProductDesc = p.ProductDesc,
+                                                    ProductDesc = (applang == "ar") ? p.ProductDescAr : p.ProductDesc,
                                                     ProductionOrderId = b.ProductionOrderId,
                                                     SapOrderId = b.SapOrderId,
                                                     ProductionOrderQty = l.Qty,
@@ -4824,7 +4982,7 @@ namespace GBSWarehouse.Controllers
                                                     OrderTypeDesc = o.OrderTypeDesc,
                                                     ProductId = p.ProductId,
                                                     ProductCode = p.ProductCode,
-                                                    ProductDesc = p.ProductDesc,
+                                                    ProductDesc = (applang == "ar") ? p.ProductDescAr : p.ProductDesc,
                                                     ProductionOrderId = b.ProductionOrderId,
                                                     SapOrderId = b.SapOrderId,
                                                     ProductionOrderQty = l.Qty,
@@ -5209,9 +5367,459 @@ namespace GBSWarehouse.Controllers
             }
             return new { responseStatus, palletDetails };
         }
+
+        
+        [Route("[action]")]
+        [HttpPost]
+        public object ProductionReceiving(long UserID,string DeviceSerialNo,string applang,string PlantCode, string ProductCode,int OrderDetailsId,int CartonsReceivedQty, string PalletCode, bool? IsExcessProductionReceiving, string StorageLocationCode)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(PlantCode) || string.IsNullOrWhiteSpace(PlantCode))
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing plant code", "لم يتم إدخال كود المصنع", applang) };
+                }
+                if (!DBContext.Plants.Any(x => x.PlantCode == PlantCode))
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Plant code is wrong", "كود المصنع خاطئ", applang) };
+                }
+                if (string.IsNullOrEmpty(StorageLocationCode) || string.IsNullOrWhiteSpace(StorageLocationCode))
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing storage location code", "لم يتم إدخال كود موقع التخزين", applang) };
+                }
+                if (!DBContext.StorageLocations.Any(x => x.StorageLocationCode == StorageLocationCode && x.PlantCode == PlantCode))
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Storage location code is wrong", "كود موقع التخزين خاطئ", applang)};
+                }
+                if (string.IsNullOrEmpty(ProductCode) || string.IsNullOrWhiteSpace(ProductCode))
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing Product Code", "لم يتم إدخال كود المنتج", applang)};
+                }
+                var ProductData = DBContext.Products.FirstOrDefault(x => x.ProductCode == ProductCode);
+                int NoItemPerBox = 0;
+                int NoBoxPerPallet = 0;
+                int AvailablePalletReceivingCartons = 0;
+                int MaxReceivingCartons = 0;
+                if (ProductData == null)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Product code is wrong", "كود المنتج خاطئ", applang)};
+                }
+                else
+                {
+                    NoItemPerBox = (int)((ProductData.NumeratorforConversionPac ?? 0) / (ProductData.DenominatorforConversionPac ?? 0));
+                    NoBoxPerPallet = (int)((ProductData.NumeratorforConversionPal ?? 0) / (ProductData.DenominatorforConversionPal ?? 0));
+                }
+                if (CartonsReceivedQty <= 0)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Cartons Received Qty must be greater than zero", "يجب أن تكون كمية الكراتين المستلمة أكبر من الصفر", applang) };
+                }
+                if (CartonsReceivedQty > NoBoxPerPallet)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus($"Cartons Received Qty must not exceed pallet capacity {NoBoxPerPallet}", $"يجب أن تكون كمية الكراتين المستلمة لا تتخطى سعة الباليت وهي {NoBoxPerPallet}", applang) };
+                }
+
+                if (string.IsNullOrEmpty(PalletCode) || string.IsNullOrWhiteSpace(PalletCode))
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing pallet code", "لم يتم إدخال كود الباليت", applang)};
+                }
+                if (!DBContext.Pallets.Any(x => x.PalletCode == PalletCode))
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Warehouse Pallet Code is wrong", "كود الباليت التي فى المخزن خاطئ", applang) };
+                }
+
+                var OrderDetailsData = DBContext.ProductionOrderDetails.FirstOrDefault(x => x.OrderDetailsId == OrderDetailsId && x.ProductCode == ProductCode && x.PlantCode == PlantCode && x.IsReleased == true);
+                if (OrderDetailsData == null)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Order Details Id is wrong", "رقم تفاصيل أمر الإنتاج خاطئ", applang) };
+                }
+                var expectedTotalReceivingCartonsQty = 0;
+                var expectedReceivedQtyUnits = 0;
+
+                var PalletWip = DBContext.PalletWips.FirstOrDefault(x => x.PalletCode == PalletCode);
+                if (PalletWip == null)
+                {
+                    PalletWip = new()
+                    {
+                        PalletCode = PalletCode,
+                        ProductCode = ProductCode,
+                        ProductionOrderId = OrderDetailsData.ProductionOrderId,
+                        SaporderId = OrderDetailsData.SapOrderId,
+                        PlantCode = PlantCode,
+                        ProductionDate = OrderDetailsData.ProductionDate,
+                        BatchNo = OrderDetailsData.BatchNo,
+                        ProductionLineId = OrderDetailsData.ProductionLineId,
+                        ReceivingQty = CartonsReceivedQty * NoItemPerBox,
+                        IsWarehouseLocation = ProductData.IsWarehouseLocation,
+
+                    };
+                    DBContext.PalletWips.Add(PalletWip);
+                    ProductionOrderReceiving productionOrderReceiving = new()
+                    {
+                        BatchNo = OrderDetailsData.BatchNo,
+                        NumeratorforConversionPac = ProductData.NumeratorforConversionPac,
+                        NumeratorforConversionPal = ProductData.NumeratorforConversionPal,
+                        DenominatorforConversionPac = ProductData.DenominatorforConversionPac,
+                        DenominatorforConversionPal = ProductData.DenominatorforConversionPal,
+                        DateTimeAdd = DateTime.Now,
+                        UserIdAdd = UserID,
+                        ProductionDate = OrderDetailsData.ProductionDate,
+                        DeviceSerialNoReceived = DeviceSerialNo,
+                        IsWarehouseReceived = false,
+                        ProductCode = OrderDetailsData.ProductCode,
+                        PalletCode = PalletCode,
+                        PlantCode = OrderDetailsData.PlantCode,
+                        ProductionLineId = OrderDetailsData.ProductionLineId,
+                        ProductionOrderId = OrderDetailsData.ProductionOrderId,
+                        Qty = CartonsReceivedQty * NoItemPerBox,
+                        SaporderId = OrderDetailsData.SapOrderId,
+                        IsExcessProductionReceiving = IsExcessProductionReceiving
+                    };
+                    DBContext.ProductionOrderReceivings.Add(productionOrderReceiving);
+                }
+                else
+                {
+                    AvailablePalletReceivingCartons = NoBoxPerPallet - (int)((PalletWip.ReceivingQty ?? 0) / NoBoxPerPallet);
+                    if (CartonsReceivedQty <= AvailablePalletReceivingCartons)
+                    {
+                        PalletWip.ReceivingQty = CartonsReceivedQty * NoItemPerBox;
+                        DBContext.PalletWips.Update(PalletWip);
+                        var ProductionOrderReceivingData = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.PalletCode == PalletCode && x.ProductionOrderId == PalletWip.ProductionOrderId && x.BatchNo == PalletWip.BatchNo && x.ProductCode == PalletWip.ProductCode && x.ProductionLineId == PalletWip.ProductionLineId);
+                        ProductionOrderReceivingData.Qty = CartonsReceivedQty * NoItemPerBox;
+                        DBContext.ProductionOrderReceivings.Update(ProductionOrderReceivingData);
+                    }
+                    else
+                    {
+                        return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Exceeding the maximum receiving quantity for the pallet", "تجاوز الحد الأقصى لكمية الاستلام للباليت", applang) };
+                    }
+
+                }
+               
+                
+                    var receivedQtyUnits = OrderDetailsData.ReceivedQty;
+                    var batchQtyUnits = OrderDetailsData.Qty;
+                    expectedReceivedQtyUnits = (int)  receivedQtyUnits + (CartonsReceivedQty * NoItemPerBox);
+                    expectedTotalReceivingCartonsQty = (int)(expectedReceivedQtyUnits / NoItemPerBox);
+
+                    if (expectedReceivedQtyUnits > batchQtyUnits)
+                    {
+                        if (!IsExcessProductionReceiving.HasValue || IsExcessProductionReceiving == false)
+                        {
+                            return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Exceeding the maximum receiving quantity for the order details", "تجاوز الحد الأقصى لكمية الاستلام لتفاصيل الطلب", applang) };
+                        }
+                    }
+                    
+                Console.WriteLine($"receivedQty:{OrderDetailsData.ReceivedQty} expectedReceivedQtyUnits: {expectedReceivedQtyUnits}, expectedTotalReceivingCartonsQty: {expectedTotalReceivingCartonsQty}, batchQtyUnits: {batchQtyUnits}, NoItemPerBox: {NoItemPerBox}");
+
+                OrderDetailsData.ReceivedQty = expectedReceivedQtyUnits;
+                OrderDetailsData.BatchStatus = "Receiving";
+                OrderDetailsData.DateTimeUpdate = DateTime.Now;
+                OrderDetailsData.UserIdUpdate = UserID;
+                OrderDetailsData.DeviceSerialNoUpdate = DeviceSerialNo;
+                if (OrderDetailsData.ReceivedQty >= OrderDetailsData.Qty)
+                {
+                    OrderDetailsData.IsReceived = true;
+                }
+                DBContext.ProductionOrderDetails.Update(OrderDetailsData);
+                
+                DBContext.SaveChanges();
+
+                var OrderDetailsDataAfterSave = (from pod in DBContext.ProductionOrderDetails
+                                                 join po in DBContext.ProductionOrders on pod.ProductionOrderId equals po.ProductionOrderId
+                                                 join p in DBContext.Products on pod.ProductCode equals p.ProductCode
+                                                 join pl in DBContext.Plants on pod.PlantCode equals pl.PlantCode
+                                                 join prl in DBContext.ProductionLines on pod.ProductionLineId equals prl.ProductionLineId
+                                                 join ol in DBContext.OrderTypes on po.OrderTypeCode equals ol.OrderTypeCode                                             
+                                                 where pod.OrderDetailsId == OrderDetailsId
+                                                 select new ProductionLineDetailsParam
+                                                 {
+                                                     PlantId = pl.PlantId,
+                                                     PlantCode = pl.PlantCode,
+                                                     PlantDesc = pl.PlantDesc,
+                                                     OrderTypeId = ol.OrderTypeId,
+                                                     OrderTypeCode = ol.OrderTypeCode,
+                                                     OrderTypeDesc = ol.OrderTypeDesc,
+                                                     ProductId = p.ProductId,
+                                                     ProductCode = p.ProductCode,
+                                                     ProductDesc = p.ProductDesc,
+                                                        ProductionOrderId = po.ProductionOrderId,
+                                                        SapOrderId = po.SapOrderId.Value,
+                                                        ProductionOrderQty = po.Qty,
+                                                        ProductionOrderQtyCartoon = (po.Qty / NoItemPerBox),
+                                                        OrderDate = po.OrderDate,
+                                                        OrderDetailsId = pod.OrderDetailsId,
+                                                        BatchNo = pod.BatchNo,
+                                                        BatchQty = pod.Qty,
+                                                        BatchQtyCartoon = (pod.Qty / NoItemPerBox),
+                                                        NoCanPerCartoon = NoItemPerBox,
+                                                        NoCartoonPerPallet = NoBoxPerPallet,
+                                                        PalletCapacity = (NoBoxPerPallet * NoItemPerBox),
+                                                        ProductionDate = pod.ProductionDate,
+                                                        IsClosedBatch = pod.IsClosedBatch,
+                                                        IsReleased = pod.IsReleased,
+                                                        BatchStatus = pod.BatchStatus,
+                                                        IsReceived = pod.IsReceived,
+                                                        ReceivedQty = pod.ReceivedQty,
+                                                        ReceivedQtyCartoon = (pod.ReceivedQty / NoItemPerBox),
+                                                        ProductionLineId = pod.ProductionLineId.Value,
+                                                        ProductionLineCode = prl.ProductionLineCode,
+                                                        ProductionLineDesc = prl.ProductionLineDesc,
+                                                        }).FirstOrDefault();
+
+            
+
+                //var GetProductionLineDetails = (from b in DBContext.ProductionLineWips
+                //                                join l in DBContext.ProductionOrders on b.ProductionOrderId equals l.ProductionOrderId
+                //                                join r in DBContext.ProductionOrderReceivings on new { b.ProductionOrderId, b.BatchNo } equals new { ProductionOrderId = r.ProductionOrderId.Value, r.BatchNo } into rr
+                //                                from r in rr.DefaultIfEmpty()
+                //                                join d in DBContext.ProductionOrderDetails on b.OrderDetailsId equals d.OrderDetailsId
+                //                                join p in DBContext.Products on l.ProductCode equals p.ProductCode
+                //                                join x in DBContext.Plants on l.PlantCode equals x.PlantCode
+                //                                join o in DBContext.OrderTypes on l.OrderTypeCode equals o.OrderTypeCode
+                //                                join ln in DBContext.ProductionLines on b.ProductionLineId equals ln.ProductionLineId
+                //                                where ln.ProductionLineId == OrderDetailsData.ProductionLineId && ln.PlantCode == PlantCode
+                //                                select new ProductionLineDetailsParam
+                //                                {
+                //                                    PlantId = x.PlantId,
+                //                                    PlantCode = x.PlantCode,
+                //                                    PlantDesc = x.PlantDesc,
+                //                                    OrderTypeId = o.OrderTypeId,
+                //                                    OrderTypeCode = o.OrderTypeCode,
+                //                                    OrderTypeDesc = o.OrderTypeDesc,
+                //                                    ProductId = p.ProductId,
+                //                                    ProductCode = p.ProductCode,
+                //                                    ProductDesc = p.ProductDesc,
+                //                                    ProductionOrderId = b.ProductionOrderId,
+                //                                    SapOrderId = b.SapOrderId,
+                //                                    ProductionOrderQty = l.Qty,
+                //                                    ProductionOrderQtyCartoon = (r.BatchNo != null) ? (l.Qty / (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0))) : (l.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
+                //                                    OrderDate = l.OrderDate,
+                //                                    OrderDetailsId = b.OrderDetailsId,
+                //                                    BatchNo = d.BatchNo,
+                //                                    BatchQty = d.Qty,
+                //                                    BatchQtyCartoon = (r.BatchNo != null) ? (d.Qty / (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0))) : (d.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
+                //                                    NoCanPerCartoon = (r.BatchNo != null) ? (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0)) : (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0)),
+                //                                    NoCartoonPerPallet = (r.BatchNo != null) ? (long)((r.NumeratorforConversionPal ?? 0) / (r.DenominatorforConversionPal ?? 0)) : (long)((p.NumeratorforConversionPal ?? 0) / (p.DenominatorforConversionPal ?? 0)),
+                //                                    ProductionDate = d.ProductionDate,
+                //                                    IsClosedBatch = d.IsClosedBatch,
+                //                                    IsReleased = d.IsReleased,
+                //                                    BatchStatus = d.BatchStatus,
+                //                                    IsReceived = d.IsReceived,
+                //                                    ReceivedQty = d.ReceivedQty,
+                //                                    ReceivedQtyCartoon = (r.BatchNo != null) ? (d.ReceivedQty / (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0))) : (d.ReceivedQty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
+                //                                    ProductionLineId = ln.ProductionLineId,
+                //                                    ProductionLineCode = ln.ProductionLineCode,
+                //                                    ProductionLineDesc = ln.ProductionLineDesc
+                //                                }).Distinct().ToList();
+
+
+                //var productionLineDetails = (from b in GetProductionLineDetails
+                //                             select new ProductionLineDetailsParam
+                //                             {
+                //                                 PlantId = b.PlantId,
+                //                                 PlantCode = b.PlantCode,
+                //                                 PlantDesc = b.PlantDesc,
+                //                                 OrderTypeId = b.OrderTypeId,
+                //                                 OrderTypeCode = b.OrderTypeCode,
+                //                                 OrderTypeDesc = b.OrderTypeDesc,
+                //                                 ProductId = b.ProductId,
+                //                                 ProductCode = b.ProductCode,
+                //                                 ProductDesc = b.ProductDesc,
+                //                                 ProductionOrderId = b.ProductionOrderId,
+                //                                 SapOrderId = b.SapOrderId,
+                //                                 ProductionOrderQty = b.ProductionOrderQty,
+                //                                 ProductionOrderQtyCartoon = b.ProductionOrderQtyCartoon,
+                //                                 OrderDate = b.OrderDate,
+                //                                 OrderDetailsId = b.OrderDetailsId,
+                //                                 BatchNo = b.BatchNo,
+                //                                 BatchQty = b.BatchQty,
+                //                                 BatchQtyCartoon = b.BatchQtyCartoon,
+                //                                 NoCanPerCartoon = b.NoCanPerCartoon,
+                //                                 NoCartoonPerPallet = b.NoCartoonPerPallet,
+                //                                 PalletCapacity = (b.NoCartoonPerPallet * b.NoCanPerCartoon),
+                //                                 ProductionDate = b.ProductionDate,
+                //                                 IsClosedBatch = b.IsClosedBatch,
+                //                                 IsReleased = b.IsReleased,
+                //                                 BatchStatus = b.BatchStatus,
+                //                                 IsReceived = b.IsReceived,
+                //                                 ReceivedQty = b.ReceivedQty,
+                //                                 ReceivedQtyCartoon = b.ReceivedQtyCartoon,
+                //                                 ProductionLineId = b.ProductionLineId,
+                //                                 ProductionLineCode = b.ProductionLineCode,
+                //                                 ProductionLineDesc = b.ProductionLineDesc
+                //                             }).FirstOrDefault();
+                if (OrderDetailsDataAfterSave != null)
+                {
+                    return new
+                    {
+                        responseStatus = ResponseStatusHelper.SuccessResponseStatus("Data sent successfully", "تم إرسال البيانات بنجاح", applang),
+                        productionLineDetails = OrderDetailsDataAfterSave,
+                        palletDetails = new PalletDetailsParam()
+                    };
+                }
+                else
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Error in getting production line details", "حدث خطأ في الحصول على تفاصيل خط الإنتاج", applang) };
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new { ResponseStatus = ResponseStatusHelper.ExceptionResponseStatus(ex.InnerException?.Message, applang) };
+                Console.WriteLine(ex.InnerException?.Message);
+            }
+            
+        }
+        [Route("[action]")]
+        [HttpPut]
+        public async Task<object> UpdateBatchAsync(long? ProductionOrderDetailsId, string applang, int? newBatchQuantity,string batchNo, DateTime? productionDate)
+        {
+            try
+            {
+                if (ProductionOrderDetailsId == null)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("ProductionOrderDetailsId is missing!", "معرف تفاصيل طلب الانتاج غير موجود", applang) };
+                }
+                if (newBatchQuantity == null) {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("New batch quantity is missing", "كمية الباتش الجديدة غير موجودة!", applang) };
+                }
+                if(newBatchQuantity <= 0)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("New batch quantity must be greater than zero!", "يجب أن تكون كمية الباتش الجديدة أكبر من الصفر!", applang) };
+                }
+                
+                if (productionDate != null)
+                {
+                    if (string.IsNullOrEmpty(batchNo) || string.IsNullOrWhiteSpace(batchNo))
+                    {
+                        return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Batch number is missing", "رقم الباتش غير موجود!", applang) };
+                    }
+                }
+                var orderDetails = (from o in DBContext.ProductionOrderDetails
+                                    join p in DBContext.Products on o.ProductCode equals p.ProductCode
+                                    where o.OrderDetailsId == ProductionOrderDetailsId 
+                                    select new
+                                    {
+                                        OrderDetailsId = o.OrderDetailsId,
+                                        ProductCode = p.ProductCode,
+                                        NoItemPerBox = (int)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0)),
+                                        BatchQty = o.Qty,
+                                        BatchQtyCartons =(int) (o.Qty / (int)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
+                                        ReceivedQty = o.ReceivedQty,
+                                        ReceivedQtyCartons = (int)(o.ReceivedQty / (int)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
+                                        IsClosed = o.IsClosedBatch,
+                                        WarehouseReceivedQty = DBContext.PalletWips.Where(b => b.ProductionOrderId == o.ProductionOrderId && b.BatchNo == o.BatchNo && b.ProductCode == o.ProductCode).Sum(b => b.WarehouseReceivingQty) ?? 0,
+                                    }).FirstOrDefault();
+                if (orderDetails == null)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Wrong ProductionOrderDetailsId!", "خطأ في معرف تفاصيل طلب الانتاج", applang) };
+                }
+                if(newBatchQuantity < orderDetails.ReceivedQtyCartons)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("New batch quantity must be greater than or equal received quantity!", "يجب أن تكون كمية الباتش الجديدة أكبر من أو تساوي الكمية المستلمة!", applang) };
+                }
+                if (orderDetails.WarehouseReceivedQty > 0)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Can not edit batch that has warehouse received quantity!", "لا يمكن تعديل باتش به كمية مستلمة من المخزن بالفعل!", applang) };
+                }
+                var orderDetailsToUpdate = DBContext.ProductionOrderDetails.Find(ProductionOrderDetailsId);
+                var oldBatchNo = orderDetailsToUpdate.BatchNo;
+                orderDetailsToUpdate.Qty = newBatchQuantity * orderDetails.NoItemPerBox;
+                orderDetailsToUpdate.BatchNo = batchNo;
+                orderDetailsToUpdate.ProductionDate = productionDate;
+                DBContext.ProductionOrderDetails.Update(orderDetailsToUpdate);
+                var batchesToUpdate = DBContext.BatchLists.FirstOrDefault(b => b.ProductionOrderDetailsId == ProductionOrderDetailsId);
+                if (batchesToUpdate != null)
+                {
+                    batchesToUpdate.QtyProduction = newBatchQuantity * orderDetails.NoItemPerBox;
+                    batchesToUpdate.BatchNo = batchNo;
+                    batchesToUpdate.ProductionDate = productionDate;
+                    DBContext.BatchLists.Update(batchesToUpdate);
+                }
+                await DBContext.PalletWips
+                        .Where(r=>r.BatchNo == oldBatchNo)
+                        .ExecuteUpdateAsync(
+                    r=>r.SetProperty(r=>r.BatchNo,batchNo)
+                    .SetProperty(r=>r.ProductionDate,productionDate)
+                    );
+                await DBContext.ProductionOrderReceivings
+                        .Where(r => r.BatchNo == oldBatchNo)
+                        .ExecuteUpdateAsync(
+                    r => r.SetProperty(r => r.BatchNo, batchNo)
+                    .SetProperty(r => r.ProductionDate,productionDate)
+                    );
+
+
+
+                var orderDetailsAfterUpdate = (
+                    from o in DBContext.ProductionOrderDetails
+                    join p in DBContext.Products on o.ProductCode equals p.ProductCode
+                    join pl in DBContext.ProductionLines on o.ProductionLineId equals pl.ProductionLineId
+                    where o.OrderDetailsId == ProductionOrderDetailsId
+                    select new
+                    {
+                        orderDetailsId = o.OrderDetailsId,
+                        qty = o.Qty,
+                        qtyCartoon = (int)(o.Qty / (p.NumeratorforConversionPac / p.DenominatorforConversionPac)),
+                        batchNo = o.BatchNo,
+                        productionLineId = o.ProductionLineId,
+                        productionLineCode = pl.ProductionLineCode,
+                        productionDate = o.ProductionDate,
+                        isClosedBatch = o.IsClosedBatch,
+                        productionOrderId = o.ProductionOrderId,
+                        isReleased = o.IsReleased,
+                        batchStatus = o.BatchStatus
+                    }
+                ).FirstOrDefault();
+
+                DBContext.SaveChanges();
+
+                return new {    
+                    ResponseStatus = ResponseStatusHelper.SuccessResponseStatus("Batch quantity updated successfully", "تم تحديث كمية الباتش بنجاح", applang),
+                    ProductionOrderDetails = orderDetailsAfterUpdate,
+                    };
+                }
+            catch (Exception ex)
+            {
+                return new { ResponseStatus = ResponseStatusHelper.ExceptionResponseStatus(ex.InnerException?.Message, applang) };
+            }
+        }
+        [Route("[action]")]
+        [HttpDelete]
+        public object DeleteBatch(long? ProductionOrderDetailsId, string applang)
+        {
+            try
+            {
+                if (ProductionOrderDetailsId == null)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("ProductionOrderDetailsId is missing!", "معرف تفاصيل طلب الانتاج غير موجود", applang) };
+                }
+                var orderDetails = DBContext.ProductionOrderDetails.Find(ProductionOrderDetailsId);
+                if (orderDetails == null)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Wrong ProductionOrderDetailsId!", "خطأ في معرف تفاصيل طلب الانتاج", applang) };
+                }
+                if (orderDetails.ReceivedQty != 0)
+                {
+                    return new { ResponseStatus = ResponseStatusHelper.ErrorResponseStatus("Can not delete batch that has received quantity!", "لا يمكن حذف باتش به كمية مستلمة بالفعل!", applang) };
+                }
+                DBContext.ProductionOrderDetails.Remove(orderDetails);
+                var batch = DBContext.BatchLists.FirstOrDefault(b => b.ProductionOrderDetailsId == ProductionOrderDetailsId);
+                if (batch != null)
+                {
+                    DBContext.BatchLists.Remove(batch);
+                }
+                DBContext.SaveChanges();
+                return new { ResponseStatus = ResponseStatusHelper.SuccessResponseStatus("Batch deleted successfully", "تم إزالة الباتش بنجاح", applang) };
+            } catch(Exception ex)
+            {
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                return new { ResponseStatus = ResponseStatusHelper.ExceptionResponseStatus(ex.Message,applang) };
+                
+            }
+        }
         [Route("[action]")]
         [HttpGet]
-        public object ProductionReceiving(long UserID, string DeviceSerialNo, string applang, string PlantCode, string ProductionLineCode, string ProductCode, long? CartoonReceivedQty, string PalletCode, bool? IsExcessProductionReceiving)
+        public async Task<object> ProductionReceivingAsync(long UserID, string DeviceSerialNo, string applang, string PlantCode, int ProductionOrderDetailsId, string ProductCode, long? CartoonReceivedQty, string PalletCode, bool? IsExcessProductionReceiving, string StorageLocation)
         {
             ResponseStatus responseStatus = new();
             ProductionLineDetailsParam productionLineDetails = new();
@@ -5239,22 +5847,22 @@ namespace GBSWarehouse.Controllers
                     responseStatus.StatusMessage = ((applang == "ar") ? "كود المصنع خاطئ" : "Plant code is wrong");
                     return new { responseStatus, productionLineDetails, palletDetails };
                 }
-                if (ProductionLineCode == null || string.IsNullOrEmpty(ProductionLineCode.Trim()))
-                {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال كود خط الإنتاج" : "Missing production line code");
-                    return new { responseStatus, productionLineDetails, palletDetails };
-                }
-                if (!DBContext.ProductionLines.Any(x => x.ProductionLineCode == ProductionLineCode && x.PlantCode == PlantCode))
-                {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "كود خط الإنتاج لا ينتمي للمصنع" : "Production Line code is not related to the plant");
-                    return new { responseStatus, productionLineDetails, palletDetails };
-                }
-                var ProductionLineData = DBContext.ProductionLines.FirstOrDefault(x => x.ProductionLineCode == ProductionLineCode && x.PlantCode == PlantCode);
-                var ProductionLineWipData = DBContext.ProductionLineWips.FirstOrDefault(x => x.ProductionLineId == ProductionLineData.ProductionLineId && x.PlantCode == PlantCode);
+                //if (ProductionLineCode == null || string.IsNullOrEmpty(ProductionLineCode.Trim()))
+                //{
+                //    responseStatus.StatusCode = 401;
+                //    responseStatus.IsSuccess = false;
+                //    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال كود خط الإنتاج" : "Missing production line code");
+                //    return new { responseStatus, productionLineDetails, palletDetails };
+                //}
+                //if (!DBContext.ProductionLines.Any(x => x.ProductionLineCode == ProductionLineCode && x.PlantCode == PlantCode))
+                //{
+                //    responseStatus.StatusCode = 401;
+                //    responseStatus.IsSuccess = false;
+                //    responseStatus.StatusMessage = ((applang == "ar") ? "كود خط الإنتاج لا ينتمي للمصنع" : "Production Line code is not related to the plant");
+                //    return new { responseStatus, productionLineDetails, palletDetails };
+                //}
+               // var ProductionLineData = DBContext.ProductionLines.FirstOrDefault(x => x.ProductionLineCode == ProductionLineCode && x.PlantCode == PlantCode);
+                var ProductionLineWipData = DBContext.ProductionLineWips.FirstOrDefault(x => x.OrderDetailsId == ProductionOrderDetailsId && x.PlantCode == PlantCode);
                 if (ProductionLineWipData == null)
                 {
                     responseStatus.StatusCode = 401;
@@ -5277,7 +5885,7 @@ namespace GBSWarehouse.Controllers
                     responseStatus.StatusMessage = ((applang == "ar") ? "كود المنتج خاطئ" : "Product code is wrong");
                     return new { responseStatus, productionLineDetails, palletDetails };
                 }
-                var ProductionOrderDetailsData = DBContext.ProductionOrderDetails.FirstOrDefault(x => x.ProductionLineId == ProductionLineWipData.ProductionLineId && x.BatchNo == ProductionLineWipData.BatchNo && x.ProductionOrderId == ProductionLineWipData.ProductionOrderId && x.ProductCode == ProductCode && x.IsReleased == true);
+                var ProductionOrderDetailsData = DBContext.ProductionOrderDetails.FirstOrDefault(x => x.OrderDetailsId == ProductionOrderDetailsId && x.BatchNo == ProductionLineWipData.BatchNo && x.ProductionOrderId == ProductionLineWipData.ProductionOrderId && x.ProductCode == ProductCode && x.IsReleased == true);
                 if (ProductionOrderDetailsData == null)
                 {
                     responseStatus.StatusCode = 401;
@@ -5329,7 +5937,7 @@ namespace GBSWarehouse.Controllers
                         responseStatus.StatusMessage = ((applang == "ar") ? " كود المنتج لا ينتمي للباليت" : "Product code is not related to the pallet");
                         return new { responseStatus, productionLineDetails, palletDetails };
                     }
-                    var productionOrderReceiving = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.PalletCode == PalletCode && x.ProductionLineId == PalletData.ProductionLineId && x.ProductionOrderId == PalletData.ProductionOrderId && x.BatchNo == PalletData.BatchNo && x.ProductCode == PalletData.ProductCode);
+                    var productionOrderReceiving = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.PalletCode == PalletCode && x.BatchNo == ProductionOrderDetailsData.BatchNo  && x.ProductionOrderId == PalletData.ProductionOrderId && x.BatchNo == PalletData.BatchNo && x.ProductCode == PalletData.ProductCode);
                     NoItemPerBox = ((productionOrderReceiving.NumeratorforConversionPac ?? 0) / (productionOrderReceiving.DenominatorforConversionPac ?? 0));
                     NoBoxPerPallet = ((productionOrderReceiving.NumeratorforConversionPal ?? 0) / (productionOrderReceiving.DenominatorforConversionPal ?? 0));
                     MaxReceivingQty = NoBoxPerPallet * NoItemPerBox;
@@ -5341,7 +5949,7 @@ namespace GBSWarehouse.Controllers
                         return new { responseStatus, productionLineDetails, palletDetails };
                     }
 
-                    if (DBContext.ProductionOrderReceivings.Any(x => x.PalletCode == PalletCode && x.ProductionLineId == PalletData.ProductionLineId && x.ProductionOrderId == PalletData.ProductionOrderId && x.BatchNo == PalletData.BatchNo && x.ProductCode == PalletData.ProductCode && MaxReceivingQty < (x.Qty + (CartoonReceivedQty * NoItemPerBox))))
+                    if (DBContext.ProductionOrderReceivings.Any(x => x.PalletCode == PalletCode  && x.ProductionOrderId == PalletData.ProductionOrderId && x.BatchNo == PalletData.BatchNo && x.ProductCode == PalletData.ProductCode && MaxReceivingQty < (x.Qty + (CartoonReceivedQty * NoItemPerBox))))
                     {
                         responseStatus.StatusCode = 401;
                         responseStatus.IsSuccess = false;
@@ -5373,6 +5981,7 @@ namespace GBSWarehouse.Controllers
                     DBContext.ProductionOrderReceivings.Update(productionOrderReceiving);
                     PalletData.ReceivingQty += (CartoonReceivedQty * (long)NoItemPerBox);
                     DBContext.PalletWips.Update(PalletData);
+
                 }
                 else
                 {
@@ -5441,7 +6050,8 @@ namespace GBSWarehouse.Controllers
 
 
                 }
-                ProductionOrderDetailsData.ReceivedQty += (CartoonReceivedQty * (long)NoItemPerBox);
+                var receivedQtyInUnits = ProductionOrderDetailsData.ReceivedQty + (CartoonReceivedQty * (long)NoItemPerBox);
+                ProductionOrderDetailsData.ReceivedQty = receivedQtyInUnits;
                 ProductionOrderDetailsData.BatchStatus = "Receiving";
                 if (ProductionOrderDetailsData.ReceivedQty == ProductionOrderDetailsData.Qty)
                 {
@@ -5452,44 +6062,46 @@ namespace GBSWarehouse.Controllers
                 DBContext.SaveChanges();
 
 
+                
+
                 palletDetails = (from b in DBContext.PalletWips
-                                 join l in DBContext.ProductionOrders on b.ProductionOrderId equals l.ProductionOrderId
-                                 join r in DBContext.ProductionOrderReceivings on new { b.PalletCode, b.ProductionOrderId, b.BatchNo, b.ProductionLineId } equals new { r.PalletCode, r.ProductionOrderId, r.BatchNo, r.ProductionLineId }
-                                 join p in DBContext.Products on b.ProductCode equals p.ProductCode
-                                 join x in DBContext.Plants on l.PlantCode equals x.PlantCode
-                                 join o in DBContext.OrderTypes on l.OrderTypeCode equals o.OrderTypeCode
-                                 join ln in DBContext.ProductionLines on b.ProductionLineId equals ln.ProductionLineId
-                                 where b.PalletCode == PalletCode
-                                 select new PalletDetailsParam
-                                 {
-                                     PlantId = x.PlantId,
-                                     PlantCode = x.PlantCode,
-                                     PlantDesc = x.PlantDesc,
-                                     OrderTypeId = o.OrderTypeId,
-                                     OrderTypeCode = o.OrderTypeCode,
-                                     OrderTypeDesc = o.OrderTypeDesc,
-                                     ProductId = p.ProductId,
-                                     ProductCode = p.ProductCode,
-                                     ProductDesc = p.ProductDesc,
-                                     NumeratorforConversionPac = p.NumeratorforConversionPac,
-                                     NumeratorforConversionPal = p.NumeratorforConversionPal,
-                                     DenominatorforConversionPal = p.DenominatorforConversionPal,
-                                     DenominatorforConversionPac = p.DenominatorforConversionPac,
-                                     ProductionOrderId = l.ProductionOrderId,
-                                     SapOrderId = l.SapOrderId.Value,
-                                     ProductionOrderQty = l.Qty,
-                                     ProductionOrderQtyCartoon = (r.BatchNo != null) ? (l.Qty / (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0))) : (l.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
-                                     OrderDate = l.OrderDate,
-                                     BatchNo = r.BatchNo,
-                                     PalletQty = r.Qty,
-                                     IsWarehouseLocation = b.IsWarehouseLocation,
-                                     ProductionQtyCheckIn = b.ProductionQtyCheckIn,
-                                     ProductionQtyCheckOut = b.ProductionQtyCheckOut,
-                                     IsWarehouseReceived = b.IsWarehouseReceived,
-                                     StorageLocationCode = b.StorageLocationCode,
-                                     WarehouseReceivingQty = b.WarehouseReceivingQty,
-                                     LaneCode = b.LaneCode
-                                 }).FirstOrDefault();
+                                     join l in DBContext.ProductionOrders on b.ProductionOrderId equals l.ProductionOrderId
+                                     join r in DBContext.ProductionOrderReceivings on new { b.PalletCode, b.ProductionOrderId, b.BatchNo, b.ProductionLineId } equals new { r.PalletCode, r.ProductionOrderId, r.BatchNo, r.ProductionLineId }
+                                     join p in DBContext.Products on b.ProductCode equals p.ProductCode
+                                     join x in DBContext.Plants on l.PlantCode equals x.PlantCode
+                                     join o in DBContext.OrderTypes on l.OrderTypeCode equals o.OrderTypeCode
+                                     join ln in DBContext.ProductionLines on b.ProductionLineId equals ln.ProductionLineId
+                                     where b.PalletCode == PalletCode
+                                     select new PalletDetailsParam
+                                     {
+                                         PlantId = x.PlantId,
+                                         PlantCode = x.PlantCode,
+                                         PlantDesc = x.PlantDesc,
+                                         OrderTypeId = o.OrderTypeId,
+                                         OrderTypeCode = o.OrderTypeCode,
+                                         OrderTypeDesc = o.OrderTypeDesc,
+                                         ProductId = p.ProductId,
+                                         ProductCode = p.ProductCode,
+                                         ProductDesc = p.ProductDesc,
+                                         NumeratorforConversionPac = p.NumeratorforConversionPac,
+                                         NumeratorforConversionPal = p.NumeratorforConversionPal,
+                                         DenominatorforConversionPal = p.DenominatorforConversionPal,
+                                         DenominatorforConversionPac = p.DenominatorforConversionPac,
+                                         ProductionOrderId = l.ProductionOrderId,
+                                         SapOrderId = l.SapOrderId.Value,
+                                         ProductionOrderQty = l.Qty,
+                                         ProductionOrderQtyCartoon = (r.BatchNo != null) ? (l.Qty / (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0))) : (l.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
+                                         OrderDate = l.OrderDate,
+                                         BatchNo = r.BatchNo,
+                                         PalletQty = r.Qty,
+                                         IsWarehouseLocation = b.IsWarehouseLocation,
+                                         ProductionQtyCheckIn = b.ProductionQtyCheckIn,
+                                         ProductionQtyCheckOut = b.ProductionQtyCheckOut,
+                                         IsWarehouseReceived = b.IsWarehouseReceived,
+                                         StorageLocationCode = b.StorageLocationCode,
+                                         WarehouseReceivingQty = b.WarehouseReceivingQty,
+                                         LaneCode = b.LaneCode
+                                     }).FirstOrDefault();
 
                 //productionLineDetails = (from b in DBContext.ProductionOrderReceivings
                 //                         join d in DBContext.ProductionOrderDetails on new
@@ -5550,7 +6162,7 @@ namespace GBSWarehouse.Controllers
                                                 join x in DBContext.Plants on l.PlantCode equals x.PlantCode
                                                 join o in DBContext.OrderTypes on l.OrderTypeCode equals o.OrderTypeCode
                                                 join ln in DBContext.ProductionLines on b.ProductionLineId equals ln.ProductionLineId
-                                                where ln.ProductionLineCode == ProductionLineCode && ln.PlantCode == PlantCode
+                                                where ln.ProductionLineId == ProductionOrderDetailsData.ProductionLineId && ln.PlantCode == PlantCode
                                                 select new ProductionLineDetailsParam
                                                 {
                                                     PlantId = x.PlantId,
@@ -5584,6 +6196,7 @@ namespace GBSWarehouse.Controllers
                                                     ProductionLineCode = ln.ProductionLineCode,
                                                     ProductionLineDesc = ln.ProductionLineDesc
                                                 }).Distinct().ToList();
+                
 
                 productionLineDetails = (from b in GetProductionLineDetails
                                          select new ProductionLineDetailsParam
@@ -5846,6 +6459,7 @@ namespace GBSWarehouse.Controllers
                     };
 
                     DBContext.ChangeQtyPallets.Add(changeQtyPallet);
+                    
                 }
                 else
                 {
@@ -6554,7 +7168,7 @@ namespace GBSWarehouse.Controllers
         }
         [Route("[action]")]
         [HttpGet]
-        public object GetReceivedPalletsInWarehouse(long UserID, string DeviceSerialNo, string applang, DateTime? ProductionDate, string BatchNo, DateTime? ReceivingDate)
+        public object GetReceivedPalletsInWarehouse(long UserID, string DeviceSerialNo, string applang, DateTime? ProductionDate, string BatchNo,string ProductCode, DateTime? ReceivingDate)
         {
             ResponseStatus responseStatus = new();
             List<PalletDetailsParam> palletDetails = new();
@@ -6582,6 +7196,7 @@ namespace GBSWarehouse.Controllers
                                   && (ProductionDate == null || b.ProductionDate.Value.Date == ProductionDate.Value.Date)
                                   && (BatchNo == null || b.BatchNo == BatchNo)
                                   && (ReceivingDate == null || b.DateTimeWarehouse.Value.Date == ReceivingDate.Value.Date)
+                                  && (ProductCode == null || b.ProductCode.Contains(ProductCode))
                                  select new PalletDetailsParam
                                  {
                                      ReceivingDate = b.DateTimeWarehouse,
@@ -6918,96 +7533,121 @@ namespace GBSWarehouse.Controllers
             }
             return new { responseStatus, palletDetails };
         }
+
         [Route("[action]")]
         [HttpGet]
-        public object WarehouseReceiving(long UserID, string DeviceSerialNo, string applang, string StorageLocationCode, long? CartoonReceivedQty, long? Package, string PalletCode)
+        public async Task<WarehouseReceivingDto> WarehouseReceivingAsync(long UserID, string DeviceSerialNo, string applang, string StorageLocationCode, long? CartoonReceivedQty, string PalletCode)
         {
-            ResponseStatus responseStatus = new();
-            PalletDetailsParam palletDetails = new();
             try
             {
-                decimal NoItemPerBox = 0;
                 if (CartoonReceivedQty == null || string.IsNullOrEmpty(CartoonReceivedQty.ToString().Trim()))
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال الكمية المستلمه" : "Missing Cartoon Received Qty");
-                    return new { responseStatus, palletDetails };
+                    return new WarehouseReceivingDto{responseStatus =  ResponseStatusHelper.ErrorResponseStatus("Missing Cartoon Received Qty", "لم يتم إدخال الكمية المستلمه", applang) };
                 }
-                if (Package == null || string.IsNullOrEmpty(Package.ToString().Trim()))
-                {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال التغليف" : "Missing Package");
-                    return new { responseStatus, palletDetails };
-                }
+                
                 if (StorageLocationCode == null || string.IsNullOrEmpty(StorageLocationCode.Trim()))
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال كود المخزن" : "Missing storage location code");
-                    return new { responseStatus, palletDetails };
+                   
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing storage location code", "لم يتم إدخال كود المخزن",applang) };
                 }
                 if (PalletCode == null || string.IsNullOrEmpty(PalletCode.Trim()))
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال كود الباليت" : "Missing pallet code");
-                    return new { responseStatus, palletDetails };
+                    
+                    return new WarehouseReceivingDto{ responseStatus = ResponseStatusHelper.ErrorResponseStatus("Missing pallet code", "لم يتم إدخال كود الباليت",applang)};
                 }
                 if (!DBContext.Pallets.Any(x => x.PalletCode == PalletCode))
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "كود الباليت خاطئ" : "Pallet code is wrong");
-                    return new { responseStatus, palletDetails };
+                    return new WarehouseReceivingDto{ responseStatus = ResponseStatusHelper.ErrorResponseStatus("Pallet code is wrong", "كود الباليت خاطئ",applang) };
                 }
                 if (!DBContext.PalletWips.Any(x => x.PalletCode == PalletCode))
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم تحميل الباليت" : "Pallet is not loaded");
-                    return new { responseStatus, palletDetails };
+                   
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus("Pallet is not loaded", "لم يتم تحميل الباليت",applang) };
                 }
                 if (DBContext.PalletWips.Any(x => x.PalletCode == PalletCode && x.IsWarehouseReceived == true))
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "تم استلام الباليت بالفعل في المستودع" : "The pallet has already been received in the warehouse");
-                    return new { responseStatus, palletDetails };
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus("The pallet has already been received in the warehouse", "تم استلام الباليت بالفعل في المستودع",applang) };
                 }
                 var PalletData = DBContext.PalletWips.FirstOrDefault(x => x.PalletCode == PalletCode);
                 var ProductData = DBContext.Products.FirstOrDefault(x => x.ProductCode == PalletData.ProductCode);
 
                 if (!DBContext.StorageLocations.Any(x => x.PlantCode == PalletData.PlantCode && x.StorageLocationCode == StorageLocationCode))
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "كود المخزن خاطئ او لا ينتمي للمصنع التي تم اختياره" : "Storage Location Code is wrong or not related to the selected plant");
-                    return new { responseStatus, palletDetails };
+                     return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus("Storage Location Code is wrong or not related to the selected plant", "كود المخزن خاطئ او لا ينتمي للمصنع التي تم اختياره",applang) };
+                }
+                var NoBoxPerPallet = 0m;    
+                if (ProductData != null)
+                {
+                    NoBoxPerPallet = ((ProductData.NumeratorforConversionPal ?? 0) / (ProductData.DenominatorforConversionPal ?? 0));
+                }
+                if (CartoonReceivedQty > NoBoxPerPallet)
+                {
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus($"Cartoon Received Qty more than the allowed quantity {NoBoxPerPallet}", $"الكمية المستلمة اكثر من الكمية المسموح بها {NoBoxPerPallet}",applang) };
                 }
                 if (PalletData.StorageLocationCode != null)
                 {
-                    responseStatus.StatusCode = 401;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "تم استلام الباليت بالفعل في المستودع" : "The pallet has already been received in the warehouse");
-                    return new { responseStatus, palletDetails };
+
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus("The pallet has already been received in the warehouse", "تم استلام الباليت بالفعل في المستودع",applang) };
                 }
-                if (PalletData.IsChangedQuantityByWarehouse == true)
-                {
-                    if (DBContext.ReceivingPalletsNeedApprovals.Any(x => x.PalletCode == PalletData.PalletCode && x.IsProductionApproved == null))
+                
+                //send data to sap
+                bool IsCreatedOnSap = false;
+                //CloseBatchResponse Response = SAPIntegrationAPI.CloseBatchAPI(
+                //    ProductionOrderDetailsData.ProductCode,
+                //    ProductionOrderDetailsData.SapOrderId.ToString(),
+                //    receivedQtyInUnits.Value.ToString(),
+                //    ProductionOrderDetailsData.BatchNo,
+                //    ProductionOrderDetailsData.ProductionDate.Value.ToString("yyyy-MM-dd"),
+                //    ProductData.Uom,
+                //    DateTime.Now.ToString("yyyy-MM-dd"),
+                //    ProductionOrderDetailsData.PlantCode,
+                //    StorageLocation
+                //    );
+                CloseBatchResponse Response = await SapService.CloseBatchAsync(
+                    new CloseBatchParameters
                     {
-                        responseStatus.StatusCode = 401;
-                        responseStatus.IsSuccess = false;
-                        responseStatus.StatusMessage = ((applang == "ar") ? "لقد تم تغيير الكمية المستلمة للباليت من قبل مستخدم المستودع وتحتاج الى موافقة الانتاج" : "The quantity received for the pallet has been changed by the warehouse user and needs production approval");
-                        return new { responseStatus, palletDetails };
-                    }
+                        MATNR = PalletData.ProductCode,
+                        AUFNR = PalletData.SaporderId.ToString().PadLeft(12, '0'),
+                        MENGE = CartoonReceivedQty.Value.ToString(),
+                        CHARG = PalletData.BatchNo,
+                        HSDAT = PalletData.ProductionDate.Value.ToString("yyyyMMdd"),
+                        MEINS = ProductData.Uom,
+                        BUDAT = DateTime.Now.ToString("yyyyMMdd"),
+                        WERKS = PalletData.PlantCode,
+                        LGORT = StorageLocationCode
+                    }, "FwoB4c1CbI4-ODXyQaEGuQ==");
+                if (Response != null && Response.messageType == "S")
+                {
+                    IsCreatedOnSap = true;
+                    CloseBatch entity = new()
+                    {
+                        Uom = ProductData.Uom,
+                        PlantCode = PalletData.PlantCode,
+                        Storagelocation = StorageLocationCode,
+                        BatchNumber = PalletData.BatchNo,
+                        ProductCode = PalletData.ProductCode,
+                        DateofManufacture = PalletData.ProductionDate,
+                        SapOrderId = PalletData.SaporderId,
+                        Qty = CartoonReceivedQty.Value,
+                        PostingDateintheDocument = DateTime.Now,
+                        UserIdAdd = UserID,
+                        DateTimeAdd = DateTime.Now,
+                        IsCreatedOnSap = IsCreatedOnSap,
+                        MessageCode = Response.messageCode,
+                        MessageText = Response.messageText,
+                        NumberofMaterialDocument = Response.MBLNR,
+                        MessageType = Response.messageType,
+                        MaterialDocumentYear = Response.MJAHR,
+                        Message = Response.message
+                    };
+                    DBContext.CloseBatchs.Add(entity);
 
                     var ProductionOrderReceivingsData = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.ProductionLineId == PalletData.ProductionLineId && x.BatchNo == PalletData.BatchNo && x.ProductionOrderId == PalletData.ProductionOrderId && x.ProductCode == PalletData.ProductCode && x.PalletCode == PalletCode);
+                    var NoItemPerBox = 0m;
+                    var Package = 0;
                     if (ProductionOrderReceivingsData != null)
                     {
                         NoItemPerBox = ((ProductionOrderReceivingsData.NumeratorforConversionPac ?? 0) / (ProductionOrderReceivingsData.DenominatorforConversionPac ?? 0));
-
                         ProductionOrderReceivingsData.StorageLocationCode = StorageLocationCode;
                         ProductionOrderReceivingsData.WarehouseReceivingPackage = Package;
                         ProductionOrderReceivingsData.WarehouseReceivingCartoonReceivedQty = CartoonReceivedQty;
@@ -7016,6 +7656,7 @@ namespace GBSWarehouse.Controllers
                         ProductionOrderReceivingsData.UserIdWarehouse = UserID;
                         ProductionOrderReceivingsData.DateTimeWarehouse = DateTime.Now;
                         ProductionOrderReceivingsData.DeviceSerialNoWarehouse = DeviceSerialNo;
+                        ProductionOrderReceivingsData.IsAddedInSap = IsCreatedOnSap;
                         DBContext.ProductionOrderReceivings.Update(ProductionOrderReceivingsData);
                     }
                     if (PalletData != null)
@@ -7026,6 +7667,29 @@ namespace GBSWarehouse.Controllers
                         PalletData.UserIdWarehouse = UserID;
                         PalletData.DateTimeWarehouse = DateTime.Now;
                         PalletData.DeviceSerialNoWarehouse = DeviceSerialNo;
+                        if (PalletData.ReceivingQty != (CartoonReceivedQty * (long)NoItemPerBox))
+                        {
+                            ReceivingPalletsNeedApproval receivingPalletsNeedApproval = new ReceivingPalletsNeedApproval()
+                            {
+                                PalletCode = PalletData.PalletCode,
+                                ProductionOrderId = PalletData.ProductionOrderId,
+                                SaporderId = PalletData.SaporderId,
+                                PlantCode = PalletData.PlantCode,
+                                ProductionLineId = PalletData.ProductionLineId,
+                                BatchNo = PalletData.BatchNo,
+                                ProductCode = PalletData.ProductCode,
+                                ProductionDate = PalletData.ProductionDate,
+                                WarehouseReceivingQty = (CartoonReceivedQty * (long)NoItemPerBox),
+                                WarehouseCartoonReceivingQty = CartoonReceivedQty,
+                                UserIdWarehouse = UserID,
+                                DateTimeWarehouse = DateTime.Now,
+                                DeviceSerialNoWarehouse = DeviceSerialNo
+                            };
+                            DBContext.ReceivingPalletsNeedApprovals.Add(receivingPalletsNeedApproval);
+                            PalletData.IsChangedQuantityByWarehouse = true;
+                            DBContext.PalletWips.Update(PalletData);
+
+                        }
                         DBContext.PalletWips.Update(PalletData);
                     }
                     var GetStock = DBContext.Stocks.FirstOrDefault(x => x.PlantCode == PalletData.PlantCode && x.ProductCode == PalletData.ProductCode && PalletData.ProductionDate.Value.Date == PalletData.ProductionDate.Value.Date && x.StorageLocationCode == StorageLocationCode);
@@ -7047,155 +7711,449 @@ namespace GBSWarehouse.Controllers
                         DBContext.Stocks.Add(stock);
                     }
                     DBContext.SaveChanges();
-
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.SuccessResponseStatus("Data saved successfully", "تم حفظ البيانات بنجاح", applang) };
                 }
                 else
                 {
-
-                    if (PalletData != null)
-                    {
-                        var ProductionOrderReceivingsData = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.ProductionLineId == PalletData.ProductionLineId && x.BatchNo == PalletData.BatchNo && x.ProductionOrderId == PalletData.ProductionOrderId && x.ProductCode == PalletData.ProductCode && x.PalletCode == PalletCode);
-                        if (ProductionOrderReceivingsData != null)
-                        {
-                            NoItemPerBox = ((ProductionOrderReceivingsData.NumeratorforConversionPac ?? 0) / (ProductionOrderReceivingsData.DenominatorforConversionPac ?? 0));
-
-                            if (PalletData.ReceivingQty != (CartoonReceivedQty * (long)NoItemPerBox))
-                            {
-                                ReceivingPalletsNeedApproval receivingPalletsNeedApproval = new ReceivingPalletsNeedApproval()
-                                {
-                                    PalletCode = PalletData.PalletCode,
-                                    ProductionOrderId = PalletData.ProductionOrderId,
-                                    SaporderId = PalletData.SaporderId,
-                                    PlantCode = PalletData.PlantCode,
-                                    ProductionLineId = PalletData.ProductionLineId,
-                                    BatchNo = PalletData.BatchNo,
-                                    ProductCode = PalletData.ProductCode,
-                                    ProductionDate = PalletData.ProductionDate,
-                                    WarehouseReceivingQty = (CartoonReceivedQty * (long)NoItemPerBox),
-                                    WarehouseCartoonReceivingQty = CartoonReceivedQty,
-                                    UserIdWarehouse = UserID,
-                                    DateTimeWarehouse = DateTime.Now,
-                                    DeviceSerialNoWarehouse = DeviceSerialNo
-                                };
-                                DBContext.ReceivingPalletsNeedApprovals.Add(receivingPalletsNeedApproval);
-                                PalletData.IsChangedQuantityByWarehouse = true;
-                                DBContext.PalletWips.Update(PalletData);
-                                DBContext.SaveChanges();
-
-                            }
-                            else
-                            {
-
-                                ProductionOrderReceivingsData.StorageLocationCode = StorageLocationCode;
-                                ProductionOrderReceivingsData.WarehouseReceivingPackage = Package;
-                                ProductionOrderReceivingsData.WarehouseReceivingCartoonReceivedQty = CartoonReceivedQty;
-                                ProductionOrderReceivingsData.WarehouseReceivingQty = (Package + (CartoonReceivedQty * (long)NoItemPerBox));
-                                ProductionOrderReceivingsData.IsWarehouseReceived = true;
-                                ProductionOrderReceivingsData.UserIdWarehouse = UserID;
-                                ProductionOrderReceivingsData.DateTimeWarehouse = DateTime.Now;
-                                ProductionOrderReceivingsData.DeviceSerialNoWarehouse = DeviceSerialNo;
-                                DBContext.ProductionOrderReceivings.Update(ProductionOrderReceivingsData);
-
-                                PalletData.StorageLocationCode = StorageLocationCode;
-                                PalletData.WarehouseReceivingQty = (Package + (CartoonReceivedQty * (long)NoItemPerBox));
-                                PalletData.IsWarehouseReceived = true;
-                                PalletData.UserIdWarehouse = UserID;
-                                PalletData.DateTimeWarehouse = DateTime.Now;
-                                PalletData.DeviceSerialNoWarehouse = DeviceSerialNo;
-                                DBContext.PalletWips.Update(PalletData);
-                                var GetStock = DBContext.Stocks.FirstOrDefault(x => x.PlantCode == PalletData.PlantCode && x.ProductCode == PalletData.ProductCode && PalletData.ProductionDate.Value.Date == PalletData.ProductionDate.Value.Date && x.StorageLocationCode == StorageLocationCode);
-                                if (GetStock != null)
-                                {
-                                    GetStock.Qty += (Package + (CartoonReceivedQty * (long)NoItemPerBox));
-                                    DBContext.Stocks.Update(GetStock);
-                                }
-                                else
-                                {
-                                    Stock stock = new()
-                                    {
-                                        PlantCode = PalletData.PlantCode,
-                                        ProductCode = PalletData.ProductCode,
-                                        StorageLocationCode = StorageLocationCode,
-                                        ProductionDate = PalletData.ProductionDate,
-                                        Qty = (Package + (CartoonReceivedQty * (long)NoItemPerBox))
-                                    };
-                                    DBContext.Stocks.Add(stock);
-                                }
-                            }
-                        }
-                        DBContext.SaveChanges();
-                    }
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus("Error from sap\nOrder number " + PalletData.SaporderId + "\n" + Response.messageText + " - " + Response.message, "خطأ من ساب\n طلب رقم" + PalletData.SaporderId + "\n" + Response.messageText + " - " + Response.message, applang) };
                 }
 
-
-                palletDetails = (from b in DBContext.PalletWips
-                                 join l in DBContext.ProductionOrders on b.ProductionOrderId equals l.ProductionOrderId
-                                 join r in DBContext.ProductionOrderReceivings on new { b.PalletCode, b.ProductionOrderId, b.BatchNo, b.ProductionLineId } equals new { r.PalletCode, r.ProductionOrderId, r.BatchNo, r.ProductionLineId }
-                                 join p in DBContext.Products on b.ProductCode equals p.ProductCode
-                                 join x in DBContext.Plants on l.PlantCode equals x.PlantCode
-                                 join o in DBContext.OrderTypes on l.OrderTypeCode equals o.OrderTypeCode
-                                 join ln in DBContext.ProductionLines on b.ProductionLineId equals ln.ProductionLineId
-                                 where b.PalletCode == PalletCode
-                                 select new PalletDetailsParam
-                                 {
-                                     PlantId = x.PlantId,
-                                     PlantCode = x.PlantCode,
-                                     PlantDesc = x.PlantDesc,
-                                     OrderTypeId = o.OrderTypeId,
-                                     OrderTypeCode = o.OrderTypeCode,
-                                     OrderTypeDesc = o.OrderTypeDesc,
-                                     ProductId = p.ProductId,
-                                     ProductCode = p.ProductCode,
-                                     ProductDesc = p.ProductDesc,
-                                     NumeratorforConversionPac = p.NumeratorforConversionPac,
-                                     NumeratorforConversionPal = p.NumeratorforConversionPal,
-                                     DenominatorforConversionPal = p.DenominatorforConversionPal,
-                                     DenominatorforConversionPac = p.DenominatorforConversionPac,
-                                     ProductionOrderId = l.ProductionOrderId,
-                                     SapOrderId = l.SapOrderId.Value,
-                                     ProductionOrderQty = l.Qty,
-                                     ProductionOrderQtyCartoon = (r.BatchNo != null) ? (l.Qty / (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0))) : (l.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
-                                     OrderDate = l.OrderDate,
-                                     BatchNo = r.BatchNo,
-                                     PalletQty = r.Qty,
-                                     IsWarehouseLocation = b.IsWarehouseLocation,
-                                     ProductionQtyCheckIn = b.ProductionQtyCheckIn,
-                                     ProductionQtyCheckOut = b.ProductionQtyCheckOut,
-                                     IsWarehouseReceived = b.IsWarehouseReceived,
-                                     StorageLocationCode = b.StorageLocationCode,
-                                     WarehouseReceivingQty = b.WarehouseReceivingQty,
-                                     WarehouseReceivingCartoonQty = ((decimal)b.WarehouseReceivingQty / NoItemPerBox),
-                                     LaneCode = b.LaneCode,
-                                     WarehouseReceivingPackage = r.WarehouseReceivingPackage,
-                                     WarehouseReceivingCartoonReceivedQty = r.WarehouseReceivingCartoonReceivedQty,
-                                     IsChangedQuantityByWarehouse = b.IsChangedQuantityByWarehouse
-                                 }).FirstOrDefault();
-
-                if (palletDetails != null)
-                {
-                    responseStatus.StatusCode = 200;
-                    responseStatus.IsSuccess = true;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "تم حفظ البيانات بنجاح" : "Data saved successfully");
-                }
-                else
-                {
-                    responseStatus.StatusCode = 400;
-                    responseStatus.IsSuccess = false;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم تحميل الباليت" : "Pallet is not loaded");
-                }
             }
             catch (Exception ex)
             {
-                responseStatus.StatusCode = 500;
-                responseStatus.IsSuccess = false;
-                responseStatus.StatusMessage = ((applang == "ar") ? "حدثت مشكلة في الشبكة. يرجى الاتصال بمسؤول الشبكة" : "A network problem has occurred. Please contact your network administrator");
-                responseStatus.ErrorMessage = ex.Message;
+                return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ExceptionResponseStatus(ex.Message,applang) };
             }
-            return new { responseStatus, palletDetails };
         }
+        //[Route("[action]")]
+        //[HttpGet]
+        //public object WarehouseReceiving(long UserID, string DeviceSerialNo, string applang, string StorageLocationCode, long? CartoonReceivedQty, long? Package, string PalletCode)
+        //{
+        //    ResponseStatus responseStatus = new();
+        //    PalletDetailsParam palletDetails = new();
+        //    try
+        //    {
+        //        decimal NoItemPerBox = 0;
+        //        if (CartoonReceivedQty == null || string.IsNullOrEmpty(CartoonReceivedQty.ToString().Trim()))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال الكمية المستلمه" : "Missing Cartoon Received Qty");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (Package == null || string.IsNullOrEmpty(Package.ToString().Trim()))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال التغليف" : "Missing Package");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (StorageLocationCode == null || string.IsNullOrEmpty(StorageLocationCode.Trim()))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال كود المخزن" : "Missing storage location code");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (PalletCode == null || string.IsNullOrEmpty(PalletCode.Trim()))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم إدخال كود الباليت" : "Missing pallet code");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (!DBContext.Pallets.Any(x => x.PalletCode == PalletCode))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "كود الباليت خاطئ" : "Pallet code is wrong");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (!DBContext.PalletWips.Any(x => x.PalletCode == PalletCode))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم تحميل الباليت" : "Pallet is not loaded");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (DBContext.PalletWips.Any(x => x.PalletCode == PalletCode && x.IsWarehouseReceived == true))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "تم استلام الباليت بالفعل في المستودع" : "The pallet has already been received in the warehouse");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        var PalletData = DBContext.PalletWips.FirstOrDefault(x => x.PalletCode == PalletCode);
+        //        var ProductData = DBContext.Products.FirstOrDefault(x => x.ProductCode == PalletData.ProductCode);
+
+        //        if (!DBContext.StorageLocations.Any(x => x.PlantCode == PalletData.PlantCode && x.StorageLocationCode == StorageLocationCode))
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "كود المخزن خاطئ او لا ينتمي للمصنع التي تم اختياره" : "Storage Location Code is wrong or not related to the selected plant");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (PalletData.StorageLocationCode != null)
+        //        {
+        //            responseStatus.StatusCode = 401;
+        //            responseStatus.IsSuccess = false;
+        //            responseStatus.StatusMessage = ((applang == "ar") ? "تم استلام الباليت بالفعل في المستودع" : "The pallet has already been received in the warehouse");
+        //            return new { responseStatus, palletDetails };
+        //        }
+        //        if (PalletData.IsChangedQuantityByWarehouse == true)
+        //        {
+        //            if (DBContext.ReceivingPalletsNeedApprovals.Any(x => x.PalletCode == PalletData.PalletCode && x.IsProductionApproved == null))
+        //            {
+        //                responseStatus.StatusCode = 401;
+        //                responseStatus.IsSuccess = false;
+        //                responseStatus.StatusMessage = ((applang == "ar") ? "لقد تم تغيير الكمية المستلمة للباليت من قبل مستخدم المستودع وتحتاج الى موافقة الانتاج" : "The quantity received for the pallet has been changed by the warehouse user and needs production approval");
+        //                return new { responseStatus, palletDetails };
+        //            }
+
+        //            var ProductionOrderReceivingsData = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.ProductionLineId == PalletData.ProductionLineId && x.BatchNo == PalletData.BatchNo && x.ProductionOrderId == PalletData.ProductionOrderId && x.ProductCode == PalletData.ProductCode && x.PalletCode == PalletCode);
+        //            if (ProductionOrderReceivingsData != null)
+        //            {
+        //                NoItemPerBox = ((ProductionOrderReceivingsData.NumeratorforConversionPac ?? 0) / (ProductionOrderReceivingsData.DenominatorforConversionPac ?? 0));
+
+        //                ProductionOrderReceivingsData.StorageLocationCode = StorageLocationCode;
+        //                ProductionOrderReceivingsData.WarehouseReceivingPackage = Package;
+        //                ProductionOrderReceivingsData.WarehouseReceivingCartoonReceivedQty = CartoonReceivedQty;
+        //                ProductionOrderReceivingsData.WarehouseReceivingQty = (Package + (CartoonReceivedQty * (long)NoItemPerBox));
+        //                ProductionOrderReceivingsData.IsWarehouseReceived = true;
+        //                ProductionOrderReceivingsData.UserIdWarehouse = UserID;
+        //                ProductionOrderReceivingsData.DateTimeWarehouse = DateTime.Now;
+        //                ProductionOrderReceivingsData.DeviceSerialNoWarehouse = DeviceSerialNo;
+        //                DBContext.ProductionOrderReceivings.Update(ProductionOrderReceivingsData);
+        //            }
+        //            if (PalletData != null)
+        //            {
+        //                PalletData.StorageLocationCode = StorageLocationCode;
+        //                PalletData.WarehouseReceivingQty = (Package + (CartoonReceivedQty * (long)NoItemPerBox));
+        //                PalletData.IsWarehouseReceived = true;
+        //                PalletData.UserIdWarehouse = UserID;
+        //                PalletData.DateTimeWarehouse = DateTime.Now;
+        //                PalletData.DeviceSerialNoWarehouse = DeviceSerialNo;
+        //                DBContext.PalletWips.Update(PalletData);
+        //            }
+        //            var GetStock = DBContext.Stocks.FirstOrDefault(x => x.PlantCode == PalletData.PlantCode && x.ProductCode == PalletData.ProductCode && PalletData.ProductionDate.Value.Date == PalletData.ProductionDate.Value.Date && x.StorageLocationCode == StorageLocationCode);
+        //            if (GetStock != null)
+        //            {
+        //                GetStock.Qty += (Package + (CartoonReceivedQty * (long)NoItemPerBox));
+        //                DBContext.Stocks.Update(GetStock);
+        //            }
+        //            else
+        //            {
+        //                Stock stock = new()
+        //                {
+        //                    PlantCode = PalletData.PlantCode,
+        //                    ProductCode = PalletData.ProductCode,
+        //                    StorageLocationCode = StorageLocationCode,
+        //                    ProductionDate = PalletData.ProductionDate,
+        //                    Qty = (Package + (CartoonReceivedQty * (long)NoItemPerBox))
+        //                };
+        //                DBContext.Stocks.Add(stock);
+        //            }
+        //            //send data to sap
+                    
+        //            bool IsCreatedOnSap = false;
+                    
+
+        //            //add or update close batch table
+        //            var closeBatchEntity = DBContext.CloseBatchs.FirstOrDefault(x => x.BatchNumber == PalletData.BatchNo && x.ProductCode == PalletData.ProductCode);
+
+        //            if (closeBatchEntity != null)
+        //            {
+        //                var warehouseQtyAfterClose = (closeBatchEntity.Qty + Package + CartoonReceivedQty * NoItemPerBox);
+        //                CloseBatchResponse Response = SAPIntegrationAPI.CloseBatchAPI(
+        //                    PalletData.ProductCode,
+        //                    PalletData.SaporderId.ToString(),
+        //                    warehouseQtyAfterClose.ToString(),
+        //                    PalletData.BatchNo,
+        //                    PalletData.ProductionDate.Value.ToString("yyyy-MM-dd"),
+        //                    ProductData.Uom,
+        //                    DateTime.Now.ToString("yyyy-MM-dd"),
+        //                    PalletData.PlantCode,
+        //                    StorageLocationCode
+        //                );
+        //                if (Response != null && Response.messageType == "S")
+        //                {
+        //                    IsCreatedOnSap = true;
+        //                }
+        //                closeBatchEntity.Qty = (int) warehouseQtyAfterClose;
+        //                closeBatchEntity.IsCreatedOnSap = IsCreatedOnSap;
+        //                closeBatchEntity.MessageCode = Response.messageCode;
+        //                closeBatchEntity.MessageText = Response.messageText;
+        //                closeBatchEntity.MaterialDocumentYear = Response.MJAHR;
+        //                closeBatchEntity.Message = Response.message;
+        //                DBContext.CloseBatchs.Update(closeBatchEntity);
+        //            }
+        //            else
+        //            {
+        //                var warehouseQtyAfterClose = (Package + CartoonReceivedQty * NoItemPerBox);
+        //                CloseBatchResponse Response = SAPIntegrationAPI.CloseBatchAPI(
+        //                    PalletData.ProductCode,
+        //                    PalletData.SaporderId.ToString(),
+        //                    warehouseQtyAfterClose.ToString(),
+        //                    PalletData.BatchNo,
+        //                    PalletData.ProductionDate.Value.ToString("yyyy-MM-dd"),
+        //                    ProductData.Uom,
+        //                    DateTime.Now.ToString("yyyy-MM-dd"),
+        //                    PalletData.PlantCode,
+        //                    StorageLocationCode
+        //                );
+        //                if (Response != null && Response.messageType == "S")
+        //                {
+        //                    IsCreatedOnSap = true;
+        //                }
+        //                CloseBatch entity = new()
+        //                {
+        //                    Uom = ProductData.Uom,
+        //                    PlantCode = PalletData.PlantCode,
+        //                    Storagelocation = StorageLocationCode,
+        //                    BatchNumber = PalletData.BatchNo,
+        //                    ProductCode = PalletData.ProductCode,
+        //                    DateofManufacture = PalletData.ProductionDate,
+        //                    SapOrderId = PalletData.SaporderId,
+        //                    Qty = (int)warehouseQtyAfterClose,
+        //                    PostingDateintheDocument = DateTime.Now,
+        //                    UserIdAdd = UserID,
+        //                    DateTimeAdd = DateTime.Now,
+        //                    IsCreatedOnSap = IsCreatedOnSap,
+        //                    MessageCode = Response.messageCode,
+        //                    MessageText = Response.messageText,
+        //                    NumberofMaterialDocument = Response.MBLNR,
+        //                    MessageType = Response.messageType,
+        //                    MaterialDocumentYear = Response.MJAHR,
+        //                    Message = Response.message,
+        //                };
+        //                DBContext.CloseBatchs.Add(entity);
+
+        //            }
+
+        //            DBContext.SaveChanges();
+
+
+        //        }
+        //        else
+        //        {
+
+        //            if (PalletData != null)
+        //            {
+        //                var ProductionOrderReceivingsData = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.ProductionLineId == PalletData.ProductionLineId && x.BatchNo == PalletData.BatchNo && x.ProductionOrderId == PalletData.ProductionOrderId && x.ProductCode == PalletData.ProductCode && x.PalletCode == PalletCode);
+        //                if (ProductionOrderReceivingsData != null)
+        //                {
+        //                    NoItemPerBox = ((ProductionOrderReceivingsData.NumeratorforConversionPac ?? 0) / (ProductionOrderReceivingsData.DenominatorforConversionPac ?? 0));
+
+        //                    if (PalletData.ReceivingQty != (CartoonReceivedQty * (long)NoItemPerBox))
+        //                    {
+        //                        ReceivingPalletsNeedApproval receivingPalletsNeedApproval = new ReceivingPalletsNeedApproval()
+        //                        {
+        //                            PalletCode = PalletData.PalletCode,
+        //                            ProductionOrderId = PalletData.ProductionOrderId,
+        //                            SaporderId = PalletData.SaporderId,
+        //                            PlantCode = PalletData.PlantCode,
+        //                            ProductionLineId = PalletData.ProductionLineId,
+        //                            BatchNo = PalletData.BatchNo,
+        //                            ProductCode = PalletData.ProductCode,
+        //                            ProductionDate = PalletData.ProductionDate,
+        //                            WarehouseReceivingQty = (CartoonReceivedQty * (long)NoItemPerBox),
+        //                            WarehouseCartoonReceivingQty = CartoonReceivedQty,
+        //                            UserIdWarehouse = UserID,
+        //                            DateTimeWarehouse = DateTime.Now,
+        //                            DeviceSerialNoWarehouse = DeviceSerialNo
+        //                        };
+        //                        DBContext.ReceivingPalletsNeedApprovals.Add(receivingPalletsNeedApproval);
+        //                        PalletData.IsChangedQuantityByWarehouse = true;
+        //                        DBContext.PalletWips.Update(PalletData);
+        //                        DBContext.SaveChanges();
+
+        //                    }
+        //                    else
+        //                    {
+
+        //                        ProductionOrderReceivingsData.StorageLocationCode = StorageLocationCode;
+        //                        ProductionOrderReceivingsData.WarehouseReceivingPackage = Package;
+        //                        ProductionOrderReceivingsData.WarehouseReceivingCartoonReceivedQty = CartoonReceivedQty;
+        //                        ProductionOrderReceivingsData.WarehouseReceivingQty = (Package + (CartoonReceivedQty * (long)NoItemPerBox));
+        //                        ProductionOrderReceivingsData.IsWarehouseReceived = true;
+        //                        ProductionOrderReceivingsData.UserIdWarehouse = UserID;
+        //                        ProductionOrderReceivingsData.DateTimeWarehouse = DateTime.Now;
+        //                        ProductionOrderReceivingsData.DeviceSerialNoWarehouse = DeviceSerialNo;
+        //                        DBContext.ProductionOrderReceivings.Update(ProductionOrderReceivingsData);
+
+        //                        PalletData.StorageLocationCode = StorageLocationCode;
+        //                        PalletData.WarehouseReceivingQty = (Package + (CartoonReceivedQty * (long)NoItemPerBox));
+        //                        PalletData.IsWarehouseReceived = true;
+        //                        PalletData.UserIdWarehouse = UserID;
+        //                        PalletData.DateTimeWarehouse = DateTime.Now;
+        //                        PalletData.DeviceSerialNoWarehouse = DeviceSerialNo;
+        //                        DBContext.PalletWips.Update(PalletData);
+        //                        var GetStock = DBContext.Stocks.FirstOrDefault(x => x.PlantCode == PalletData.PlantCode && x.ProductCode == PalletData.ProductCode && PalletData.ProductionDate.Value.Date == PalletData.ProductionDate.Value.Date && x.StorageLocationCode == StorageLocationCode);
+        //                        if (GetStock != null)
+        //                        {
+        //                            GetStock.Qty += (Package + (CartoonReceivedQty * (long)NoItemPerBox));
+        //                            DBContext.Stocks.Update(GetStock);
+        //                        }
+        //                        else
+        //                        {
+        //                            Stock stock = new()
+        //                            {
+        //                                PlantCode = PalletData.PlantCode,
+        //                                ProductCode = PalletData.ProductCode,
+        //                                StorageLocationCode = StorageLocationCode,
+        //                                ProductionDate = PalletData.ProductionDate,
+        //                                Qty = (Package + (CartoonReceivedQty * (long)NoItemPerBox))
+        //                            };
+        //                            DBContext.Stocks.Add(stock);
+        //                        }
+        //                        bool IsCreatedOnSap = false;
+
+
+        //                        //add or update close batch table
+        //                        var closeBatchEntity = DBContext.CloseBatchs.FirstOrDefault(x => x.BatchNumber == PalletData.BatchNo && x.ProductCode == PalletData.ProductCode);
+
+        //                        if (closeBatchEntity != null)
+        //                        {
+        //                            var warehouseQtyAfterClose = (closeBatchEntity.Qty + Package + CartoonReceivedQty * NoItemPerBox);
+        //                            CloseBatchResponse Response = SAPIntegrationAPI.CloseBatchAPI(
+        //                                PalletData.ProductCode,
+        //                                PalletData.SaporderId.ToString(),
+        //                                warehouseQtyAfterClose.ToString(),
+        //                                PalletData.BatchNo,
+        //                                PalletData.ProductionDate.Value.ToString("yyyy-MM-dd"),
+        //                                ProductData.Uom,
+        //                                DateTime.Now.ToString("yyyy-MM-dd"),
+        //                                PalletData.PlantCode,
+        //                                StorageLocationCode
+        //                            );
+        //                            if (Response != null && Response.messageType == "S")
+        //                            {
+        //                                IsCreatedOnSap = true;
+        //                            }
+        //                            closeBatchEntity.Qty = (int)warehouseQtyAfterClose;
+        //                            closeBatchEntity.IsCreatedOnSap = IsCreatedOnSap;
+        //                            closeBatchEntity.MessageCode = Response.messageCode;
+        //                            closeBatchEntity.MessageText = Response.messageText;
+        //                            closeBatchEntity.MaterialDocumentYear = Response.MJAHR;
+        //                            closeBatchEntity.Message = Response.message;
+        //                            DBContext.CloseBatchs.Update(closeBatchEntity);
+        //                        }
+        //                        else
+        //                        {
+        //                            var warehouseQtyAfterClose = (Package + CartoonReceivedQty * NoItemPerBox);
+        //                            CloseBatchResponse Response = SAPIntegrationAPI.CloseBatchAPI(
+        //                                PalletData.ProductCode,
+        //                                PalletData.SaporderId.ToString(),
+        //                                warehouseQtyAfterClose.ToString(),
+        //                                PalletData.BatchNo,
+        //                                PalletData.ProductionDate.Value.ToString("yyyy-MM-dd"),
+        //                                ProductData.Uom,
+        //                                DateTime.Now.ToString("yyyy-MM-dd"),
+        //                                PalletData.PlantCode,
+        //                                StorageLocationCode
+        //                            );
+        //                            if (Response != null && Response.messageType == "S")
+        //                            {
+        //                                IsCreatedOnSap = true;
+        //                            }
+        //                            CloseBatch entity = new()
+        //                            {
+        //                                Uom = ProductData.Uom,
+        //                                PlantCode = PalletData.PlantCode,
+        //                                Storagelocation = StorageLocationCode,
+        //                                BatchNumber = PalletData.BatchNo,
+        //                                ProductCode = PalletData.ProductCode,
+        //                                DateofManufacture = PalletData.ProductionDate,
+        //                                SapOrderId = PalletData.SaporderId,
+        //                                Qty = (int)warehouseQtyAfterClose,
+        //                                PostingDateintheDocument = DateTime.Now,
+        //                                UserIdAdd = UserID,
+        //                                DateTimeAdd = DateTime.Now,
+        //                                IsCreatedOnSap = IsCreatedOnSap,
+        //                                MessageCode = Response.messageCode,
+        //                                MessageText = Response.messageText,
+        //                                NumberofMaterialDocument = Response.MBLNR,
+        //                                MessageType = Response.messageType,
+        //                                MaterialDocumentYear = Response.MJAHR,
+        //                                Message = Response.message,
+        //                            };
+        //                            DBContext.CloseBatchs.Add(entity);
+
+        //                        }
+        //                    }
+        //                    DBContext.SaveChanges();
+        //                }
+        //            }
+
+
+        //            palletDetails = (from b in DBContext.PalletWips
+        //                             join l in DBContext.ProductionOrders on b.ProductionOrderId equals l.ProductionOrderId
+        //                             join r in DBContext.ProductionOrderReceivings on new { b.PalletCode, b.ProductionOrderId, b.BatchNo, b.ProductionLineId } equals new { r.PalletCode, r.ProductionOrderId, r.BatchNo, r.ProductionLineId }
+        //                             join p in DBContext.Products on b.ProductCode equals p.ProductCode
+        //                             join x in DBContext.Plants on l.PlantCode equals x.PlantCode
+        //                             join o in DBContext.OrderTypes on l.OrderTypeCode equals o.OrderTypeCode
+        //                             join ln in DBContext.ProductionLines on b.ProductionLineId equals ln.ProductionLineId
+        //                             where b.PalletCode == PalletCode
+        //                             select new PalletDetailsParam
+        //                             {
+        //                                 PlantId = x.PlantId,
+        //                                 PlantCode = x.PlantCode,
+        //                                 PlantDesc = x.PlantDesc,
+        //                                 OrderTypeId = o.OrderTypeId,
+        //                                 OrderTypeCode = o.OrderTypeCode,
+        //                                 OrderTypeDesc = o.OrderTypeDesc,
+        //                                 ProductId = p.ProductId,
+        //                                 ProductCode = p.ProductCode,
+        //                                 ProductDesc = p.ProductDesc,
+        //                                 NumeratorforConversionPac = p.NumeratorforConversionPac,
+        //                                 NumeratorforConversionPal = p.NumeratorforConversionPal,
+        //                                 DenominatorforConversionPal = p.DenominatorforConversionPal,
+        //                                 DenominatorforConversionPac = p.DenominatorforConversionPac,
+        //                                 ProductionOrderId = l.ProductionOrderId,
+        //                                 SapOrderId = l.SapOrderId.Value,
+        //                                 ProductionOrderQty = l.Qty,
+        //                                 ProductionOrderQtyCartoon = (r.BatchNo != null) ? (l.Qty / (long)((r.NumeratorforConversionPac ?? 0) / (r.DenominatorforConversionPac ?? 0))) : (l.Qty / (long)((p.NumeratorforConversionPac ?? 0) / (p.DenominatorforConversionPac ?? 0))),
+        //                                 OrderDate = l.OrderDate,
+        //                                 BatchNo = r.BatchNo,
+        //                                 PalletQty = r.Qty,
+        //                                 IsWarehouseLocation = b.IsWarehouseLocation,
+        //                                 ProductionQtyCheckIn = b.ProductionQtyCheckIn,
+        //                                 ProductionQtyCheckOut = b.ProductionQtyCheckOut,
+        //                                 IsWarehouseReceived = b.IsWarehouseReceived,
+        //                                 StorageLocationCode = b.StorageLocationCode,
+        //                                 WarehouseReceivingQty = b.WarehouseReceivingQty,
+        //                                 WarehouseReceivingCartoonQty = ((decimal)b.WarehouseReceivingQty / NoItemPerBox),
+        //                                 LaneCode = b.LaneCode,
+        //                                 WarehouseReceivingPackage = r.WarehouseReceivingPackage,
+        //                                 WarehouseReceivingCartoonReceivedQty = r.WarehouseReceivingCartoonReceivedQty,
+        //                                 IsChangedQuantityByWarehouse = b.IsChangedQuantityByWarehouse
+        //                             }).FirstOrDefault();
+
+        //            if (palletDetails != null)
+        //            {
+        //                responseStatus.StatusCode = 200;
+        //                responseStatus.IsSuccess = true;
+        //                responseStatus.StatusMessage = ((applang == "ar") ? "تم حفظ البيانات بنجاح" : "Data saved successfully");
+        //            }
+        //            else
+        //            {
+        //                responseStatus.StatusCode = 400;
+        //                responseStatus.IsSuccess = false;
+        //                responseStatus.StatusMessage = ((applang == "ar") ? "لم يتم تحميل الباليت" : "Pallet is not loaded");
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        responseStatus.StatusCode = 500;
+        //        responseStatus.IsSuccess = false;
+        //        responseStatus.StatusMessage = ((applang == "ar") ? "حدثت مشكلة في الشبكة. يرجى الاتصال بمسؤول الشبكة" : "A network problem has occurred. Please contact your network administrator");
+        //        responseStatus.ErrorMessage = ex.Message;
+        //    }
+        //    return new { responseStatus, palletDetails };
+        //}
         [Route("[action]")]
         [HttpPost]
-        public object ReceiveAndPutAway(long UserID, string DeviceSerialNo, string applang, string StorageLocationCode, string LaneCode, string PalletCode, long? CartoonReceivedQty)
+        public async Task<object> ReceiveAndPutAwayAsync(long UserID, string DeviceSerialNo, string applang, string StorageLocationCode, string LaneCode, string PalletCode, long? CartoonReceivedQty)
         {
             ResponseStatus responseStatus = new();
             PalletDetailsParam palletDetails = new();
@@ -7219,7 +8177,11 @@ namespace GBSWarehouse.Controllers
 
                 if (palletData.IsWarehouseReceived == true)
                     return ErrorResponse("تم استلام الباليت بالفعل في المستودع", "The pallet has already been received in the warehouse");
-
+                var productData = DBContext.Products.FirstOrDefault(x => x.ProductCode == palletData.ProductCode);
+                var NoBoxPerPallet = ((productData?.NumeratorforConversionPal ?? 0) / (productData?.DenominatorforConversionPal ?? 1));
+                var NoUnitPerBox = ((productData?.NumeratorforConversionPac ?? 0) / (productData?.DenominatorforConversionPac ?? 1));
+                if (CartoonReceivedQty> NoBoxPerPallet)
+                    return ErrorResponse("الكمية المستلمة أكبر من كمية الكرتون في الباليت", "Received quantity exceeds the number of cartons in the pallet");
                 var laneData = DBContext.Lanes.FirstOrDefault(x => x.PlantCode == palletData.PlantCode && x.StorageLocationCode == StorageLocationCode && x.LaneCode == LaneCode);
                 if (laneData == null)
                     return ErrorResponse("كود المسار خاطئ أو لا ينتمي للمصنع أو المخزن", "Lane Code is invalid or not related to selected plant/storage location");
@@ -7230,73 +8192,163 @@ namespace GBSWarehouse.Controllers
                 var receivingData = DBContext.ProductionOrderReceivings.FirstOrDefault(x => x.PalletCode == PalletCode);
                 decimal NoItemPerBox = ((receivingData?.NumeratorforConversionPac ?? 0) / (receivingData?.DenominatorforConversionPac ?? 1));
                 long totalQty = (long)(CartoonReceivedQty * NoItemPerBox);
-
-                // Update PalletWip
-                palletData.WarehouseReceivingQty = totalQty;
-                palletData.IsWarehouseReceived = true;
-                palletData.UserIdWarehouse = UserID;
-                palletData.DateTimeWarehouse = DateTime.Now;
-                palletData.DeviceSerialNoWarehouse = DeviceSerialNo;
-                palletData.StorageLocationCode ??= StorageLocationCode;
-
-                palletData.LaneCode = LaneCode;
-                palletData.UserIdPutAway = UserID;
-                palletData.DateTimePutAway = DateTime.Now;
-                palletData.DeviceSerialNoPutAway = DeviceSerialNo;
-
-                DBContext.PalletWips.Update(palletData);
-
-                // Update Receiving Data
-                if (receivingData != null)
-                {
-                    receivingData.WarehouseReceivingQty = totalQty;
-                    receivingData.IsWarehouseReceived = true;
-                    receivingData.UserIdWarehouse = UserID;
-                    receivingData.DateTimeWarehouse = DateTime.Now;
-                    receivingData.DeviceSerialNoWarehouse = DeviceSerialNo;
-                    receivingData.StorageLocationCode = palletData.StorageLocationCode;
-
-                    receivingData.LaneCode = LaneCode;
-                    receivingData.UserIdPutAway = UserID;
-                    receivingData.DateTimePutAway = DateTime.Now;
-                    receivingData.DeviceSerialNoPutAway = DeviceSerialNo;
-
-                    DBContext.ProductionOrderReceivings.Update(receivingData);
-                }
-
-                // Update or Add Stock
-                var stock = DBContext.Stocks.FirstOrDefault(x => x.PlantCode == palletData.PlantCode && x.ProductCode == palletData.ProductCode && x.ProductionDate == palletData.ProductionDate && x.StorageLocationCode == palletData.StorageLocationCode);
-                if (stock != null)
-                {
-                    stock.Qty += totalQty;
-                    DBContext.Stocks.Update(stock);
-                }
-                else
-                {
-                    DBContext.Stocks.Add(new Stock
+                bool IsCreatedOnSap = false;
+                //CloseBatchResponse Response = SAPIntegrationAPI.CloseBatchAPI(
+                //    ProductionOrderDetailsData.ProductCode,
+                //    ProductionOrderDetailsData.SapOrderId.ToString(),
+                //    receivedQtyInUnits.Value.ToString(),
+                //    ProductionOrderDetailsData.BatchNo,
+                //    ProductionOrderDetailsData.ProductionDate.Value.ToString("yyyy-MM-dd"),
+                //    ProductData.Uom,
+                //    DateTime.Now.ToString("yyyy-MM-dd"),
+                //    ProductionOrderDetailsData.PlantCode,
+                //    StorageLocation
+                //    );
+                CloseBatchResponse Response = await SapService.CloseBatchAsync(
+                    new CloseBatchParameters
                     {
-                        PlantCode = palletData.PlantCode,
-                        ProductCode = palletData.ProductCode,
-                        StorageLocationCode = palletData.StorageLocationCode,
-                        ProductionDate = palletData.ProductionDate,
-                        Qty = totalQty
-                    });
-                }
-
-                DBContext.SaveChanges();
-
-                palletDetails = BuildPalletDetails(PalletCode, NoItemPerBox);
-
-                if (palletDetails != null)
+                        MATNR = palletData.ProductCode,
+                        AUFNR = palletData.SaporderId.ToString().PadLeft(12, '0'),
+                        MENGE = CartoonReceivedQty.Value.ToString(),
+                        CHARG = palletData.BatchNo,
+                        HSDAT = palletData.ProductionDate.Value.ToString("yyyyMMdd"),
+                        MEINS = productData.Uom,
+                        BUDAT = DateTime.Now.ToString("yyyyMMdd"),
+                        WERKS = palletData.PlantCode,
+                        LGORT = StorageLocationCode
+                    }, "FwoB4c1CbI4-ODXyQaEGuQ==");
+                if (Response != null && Response.messageType == "S")
                 {
-                    responseStatus.StatusCode = 200;
-                    responseStatus.IsSuccess = true;
-                    responseStatus.StatusMessage = ((applang == "ar") ? "تم حفظ البيانات بنجاح" : "Data saved successfully");
+                    IsCreatedOnSap = true;
+
+                    CloseBatch entity = new()
+                    {
+                        Uom = productData.Uom,
+                        PlantCode = palletData.PlantCode,
+                        Storagelocation = StorageLocationCode,
+                        BatchNumber = palletData.BatchNo,
+                        ProductCode = palletData.ProductCode,
+                        DateofManufacture = palletData.ProductionDate,
+                        SapOrderId = palletData.SaporderId,
+                        Qty = CartoonReceivedQty.Value,
+                        PostingDateintheDocument = DateTime.Now,
+                        UserIdAdd = UserID,
+                        DateTimeAdd = DateTime.Now,
+                        IsCreatedOnSap = IsCreatedOnSap,
+                        MessageCode = Response.messageCode,
+                        MessageText = Response.messageText,
+                        NumberofMaterialDocument = Response.MBLNR,
+                        MessageType = Response.messageType,
+                        MaterialDocumentYear = Response.MJAHR,
+                        Message = Response.message
+                    };
+                    DBContext.CloseBatchs.Add(entity);
+                    // Update PalletWip
+                    palletData.WarehouseReceivingQty = totalQty;
+                    palletData.IsWarehouseReceived = true;
+                    palletData.UserIdWarehouse = UserID;
+                    palletData.DateTimeWarehouse = DateTime.Now;
+                    palletData.DeviceSerialNoWarehouse = DeviceSerialNo;
+                    palletData.StorageLocationCode ??= StorageLocationCode;
+                    palletData.WarehouseReceivingQty = CartoonReceivedQty * (int)NoItemPerBox;
+                    palletData.LaneCode = LaneCode;
+                    palletData.UserIdPutAway = UserID;
+                    palletData.DateTimePutAway = DateTime.Now;
+                    palletData.DeviceSerialNoPutAway = DeviceSerialNo;
+                    if (palletData.ReceivingQty != (CartoonReceivedQty * (long)NoItemPerBox))
+                    {
+                        ReceivingPalletsNeedApproval receivingPalletsNeedApproval = new ReceivingPalletsNeedApproval()
+                        {
+                            PalletCode = palletData.PalletCode,
+                            ProductionOrderId = palletData.ProductionOrderId,
+                            SaporderId = palletData.SaporderId,
+                            PlantCode = palletData.PlantCode,
+                            ProductionLineId = palletData.ProductionLineId,
+                            BatchNo = palletData.BatchNo,
+                            ProductCode = palletData.ProductCode,
+                            ProductionDate = palletData.ProductionDate,
+                            WarehouseReceivingQty = (CartoonReceivedQty * (long)NoItemPerBox),
+                            WarehouseCartoonReceivingQty = CartoonReceivedQty,
+                            UserIdWarehouse = UserID,
+                            DateTimeWarehouse = DateTime.Now,
+                            DeviceSerialNoWarehouse = DeviceSerialNo
+                        };
+                        DBContext.ReceivingPalletsNeedApprovals.Add(receivingPalletsNeedApproval);
+                        palletData.IsChangedQuantityByWarehouse = true;
+                        DBContext.PalletWips.Update(palletData);
+
+                    }
+                    DBContext.PalletWips.Update(palletData);
+
+
+
+                    // Update Receiving Data
+                    if (receivingData != null)
+                    {
+
+                        receivingData.WarehouseReceivingQty = totalQty;
+                        receivingData.IsWarehouseReceived = true;
+                        receivingData.UserIdWarehouse = UserID;
+                        receivingData.DateTimeWarehouse = DateTime.Now;
+                        receivingData.DeviceSerialNoWarehouse = DeviceSerialNo;
+                        receivingData.StorageLocationCode = palletData.StorageLocationCode;
+                        receivingData.WarehouseReceivingCartoonReceivedQty = CartoonReceivedQty;
+                        receivingData.LaneCode = LaneCode;
+                        receivingData.UserIdPutAway = UserID;
+                        receivingData.DateTimePutAway = DateTime.Now;
+                        receivingData.DeviceSerialNoPutAway = DeviceSerialNo;
+                        receivingData.IsAddedInSap = IsCreatedOnSap;
+
+                        DBContext.ProductionOrderReceivings.Update(receivingData);
+                    }
+
+                    // Update or Add Stock
+                    var stock = DBContext.Stocks.FirstOrDefault(x => x.PlantCode == palletData.PlantCode && x.ProductCode == palletData.ProductCode && x.ProductionDate == palletData.ProductionDate && x.StorageLocationCode == palletData.StorageLocationCode);
+                    if (stock != null)
+                    {
+                        stock.Qty += totalQty;
+                        DBContext.Stocks.Update(stock);
+                    }
+                    else
+                    {
+                        DBContext.Stocks.Add(new Stock
+                        {
+                            PlantCode = palletData.PlantCode,
+                            ProductCode = palletData.ProductCode,
+                            StorageLocationCode = palletData.StorageLocationCode,
+                            ProductionDate = palletData.ProductionDate,
+                            Qty = totalQty
+                        });
+                    }
+
+
+
+
+
+                    DBContext.SaveChanges();
+
+                    palletDetails = BuildPalletDetails(PalletCode, NoItemPerBox);
+
+                    if (palletDetails != null)
+                    {
+                        responseStatus.StatusCode = 200;
+                        responseStatus.IsSuccess = true;
+                        responseStatus.StatusMessage = ((applang == "ar") ? "تم حفظ البيانات بنجاح" : "Data saved successfully");
+                        return new { responseStatus, palletDetails };
+                    }
+                    else
+                    {
+                        return ErrorResponse("لم يتم تحميل الباليت", "Pallet is not loaded");
+                    }
                 }
                 else
                 {
-                    return ErrorResponse("لم يتم تحميل الباليت", "Pallet is not loaded");
+                    return new WarehouseReceivingDto { responseStatus = ResponseStatusHelper.ErrorResponseStatus("Error from sap\nOrder number "+ palletData.SaporderId+ "\n" + Response.messageText + " - " + Response.message, "خطأ من ساب\n طلب رقم" +palletData.SaporderId+ "\n" + Response.messageText + " - " + Response.message, applang) };
                 }
+
+
+                //add or update close batch table
+
             }
             catch (Exception ex)
             {
@@ -7304,9 +8356,10 @@ namespace GBSWarehouse.Controllers
                 responseStatus.IsSuccess = false;
                 responseStatus.StatusMessage = ((applang == "ar") ? "حدثت مشكلة في الشبكة. يرجى الاتصال بمسؤول الشبكة" : "A network problem has occurred. Please contact your network administrator");
                 responseStatus.ErrorMessage = ex.Message;
+                return new { responseStatus };
             }
-            return new { responseStatus, palletDetails };
 
+            return new { responseStatus, palletDetails };
             object ErrorResponse(string arMessage, string enMessage)
             {
                 responseStatus.StatusCode = 401;
@@ -10113,4 +11166,5 @@ namespace GBSWarehouse.Controllers
         }
         #endregion
     }
+
 }

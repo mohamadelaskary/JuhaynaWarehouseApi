@@ -1,0 +1,2682 @@
+[
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "Get",
+    "RelativePath": "api/GBSWarehouse",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "AddProcessOrderDetails",
+    "RelativePath": "api/GBSWarehouse/AddProcessOrderDetails",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.AddProcessOrderDetailsParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "BackofficeSignIn",
+    "RelativePath": "api/GBSWarehouse/BackofficeSignIn",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Pass",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "CancelPallet",
+    "RelativePath": "api/GBSWarehouse/CancelPallet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CancelReason",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "CancelReasonGetList",
+    "RelativePath": "api/GBSWarehouse/CancelReasonGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/GBSWarehouse/ChangePassword",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OldPass",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NewPass",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ChangeQtyPallet",
+    "RelativePath": "api/GBSWarehouse/ChangeQtyPallet",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CartoonReceivedQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ChangeQtyReason",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ChangeQtyReasonGetList",
+    "RelativePath": "api/GBSWarehouse/ChangeQtyReasonGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ClearData",
+    "RelativePath": "api/GBSWarehouse/ClearData",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "CloseBatch",
+    "RelativePath": "api/GBSWarehouse/CloseBatch",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.CloseBatchParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "CloseProductionBatch",
+    "RelativePath": "api/GBSWarehouse/CloseProductionBatch",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.ReleaseBatchParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "CreateProcessOrder",
+    "RelativePath": "api/GBSWarehouse/CreateProcessOrder",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.CreateProcessOrderParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "DeleteBatch",
+    "RelativePath": "api/GBSWarehouse/DeleteBatch",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ProductionOrderDetailsId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GenerateBatchNo",
+    "RelativePath": "api/GBSWarehouse/GenerateBatchNo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.GenerateBatchNoParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetByUserID",
+    "RelativePath": "api/GBSWarehouse/GetByUserID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetLaneDetails",
+    "RelativePath": "api/GBSWarehouse/GetLaneDetails",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LaneCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetMobileVersion",
+    "RelativePath": "api/GBSWarehouse/GetMobileVersion",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPallet_Incubation",
+    "RelativePath": "api/GBSWarehouse/GetPallet_Incubation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPallet_PutAway",
+    "RelativePath": "api/GBSWarehouse/GetPallet_PutAway",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPalletDetails",
+    "RelativePath": "api/GBSWarehouse/GetPalletDetails",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPalletDetails2",
+    "RelativePath": "api/GBSWarehouse/GetPalletDetails2",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPalletInfo",
+    "RelativePath": "api/GBSWarehouse/GetPalletInfo",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPalletList_ForPrint",
+    "RelativePath": "api/GBSWarehouse/GetPalletList_ForPrint",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCodeQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsQty",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPallets_ChangedQtyByWarehouseAndNeedProductionApproval_List",
+    "RelativePath": "api/GBSWarehouse/GetPallets_ChangedQtyByWarehouseAndNeedProductionApproval_List",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPallets_PutAway",
+    "RelativePath": "api/GBSWarehouse/GetPallets_PutAway",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPalletsForRouteCode",
+    "RelativePath": "api/GBSWarehouse/GetPalletsForRouteCode",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RouteCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPickedList",
+    "RelativePath": "api/GBSWarehouse/GetPickedList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PurchaseRequisitionNo",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProcessOrderByID",
+    "RelativePath": "api/GBSWarehouse/GetProcessOrderByID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionOrderId",
+        "Type": "System.Int64",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProcessOrdersDetailsList",
+    "RelativePath": "api/GBSWarehouse/GetProcessOrdersDetailsList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProcessOrdersDetailsListForClose",
+    "RelativePath": "api/GBSWarehouse/GetProcessOrdersDetailsListForClose",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProcessOrdersList",
+    "RelativePath": "api/GBSWarehouse/GetProcessOrdersList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProductionLineBatchs",
+    "RelativePath": "api/GBSWarehouse/GetProductionLineBatchs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionLineCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProductionLineDetails",
+    "RelativePath": "api/GBSWarehouse/GetProductionLineDetails",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionLineCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProductionLineDetails2",
+    "RelativePath": "api/GBSWarehouse/GetProductionLineDetails2",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionLineCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetProductionLineDetails3",
+    "RelativePath": "api/GBSWarehouse/GetProductionLineDetails3",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionLineCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "BatchNo",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetPurchaseRequisitionList",
+    "RelativePath": "api/GBSWarehouse/GetPurchaseRequisitionList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PurchaseRequisitionReleaseDate",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetReceivedList",
+    "RelativePath": "api/GBSWarehouse/GetReceivedList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionLineCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetReceivedPalletsInWarehouse",
+    "RelativePath": "api/GBSWarehouse/GetReceivedPalletsInWarehouse",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "BatchNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReceivingDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetRunningBatches",
+    "RelativePath": "api/GBSWarehouse/GetRunningBatches",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetSap_PurchaseRequest",
+    "RelativePath": "api/GBSWarehouse/GetSap_PurchaseRequest",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.GetSap_PurchaseRequestParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetSap_Shipment",
+    "RelativePath": "api/GBSWarehouse/GetSap_Shipment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.GetSap_ShipmentParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetSAPShipmentList",
+    "RelativePath": "api/GBSWarehouse/GetSAPShipmentList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlannedDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetShipmentTypePlant",
+    "RelativePath": "api/GBSWarehouse/GetShipmentTypePlant",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetWarehouseBatches",
+    "RelativePath": "api/GBSWarehouse/GetWarehouseBatches",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "GetWarehouseBatchPallets",
+    "RelativePath": "api/GBSWarehouse/GetWarehouseBatchPallets",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionOrderId",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "BatchNo",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "Incubation_PalletCheckInOut",
+    "RelativePath": "api/GBSWarehouse/Incubation_PalletCheckInOut",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LocationId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "TransDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "LaneGetListByPlant",
+    "RelativePath": "api/GBSWarehouse/LaneGetListByPlant",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "LocationGetList",
+    "RelativePath": "api/GBSWarehouse/LocationGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "OrderTypeGetList",
+    "RelativePath": "api/GBSWarehouse/OrderTypeGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PalletAdd",
+    "RelativePath": "api/GBSWarehouse/PalletAdd",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PalletGetList",
+    "RelativePath": "api/GBSWarehouse/PalletGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PalletLocationGetList",
+    "RelativePath": "api/GBSWarehouse/PalletLocationGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "Pallets_ChangedQtyByWarehouse_ProductionApprovalTakeAction",
+    "RelativePath": "api/GBSWarehouse/Pallets_ChangedQtyByWarehouse_ProductionApprovalTakeAction",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Comment",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsProductionApproved",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PalletTransfer",
+    "RelativePath": "api/GBSWarehouse/PalletTransfer",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.PalletTransferParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PalletTransferToPallet",
+    "RelativePath": "api/GBSWarehouse/PalletTransferToPallet",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.PalletTransferToPalletParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PickUp",
+    "RelativePath": "api/GBSWarehouse/PickUp",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PurchaseRequisitionId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PickupCartoonQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "BatchNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode_Warehouse",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode_Pickup",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PlantGetList",
+    "RelativePath": "api/GBSWarehouse/PlantGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PostShipment",
+    "RelativePath": "api/GBSWarehouse/PostShipment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.PostShipmentParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ProductGetList",
+    "RelativePath": "api/GBSWarehouse/ProductGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ProductionLineGetList",
+    "RelativePath": "api/GBSWarehouse/ProductionLineGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ProductionOrdersSapAdd",
+    "RelativePath": "api/GBSWarehouse/ProductionOrdersSapAdd",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.CreateProcessOrderParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ProductionOrdersSapGetList",
+    "RelativePath": "api/GBSWarehouse/ProductionOrdersSapGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ProductionReceiving",
+    "RelativePath": "api/GBSWarehouse/ProductionReceiving",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OrderDetailsId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "CartonsReceivedQty",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsExcessProductionReceiving",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ProductionReceivingAsync",
+    "RelativePath": "api/GBSWarehouse/ProductionReceiving",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionOrderDetailsId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CartoonReceivedQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "IsExcessProductionReceiving",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocation",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PurchaseRequestCreate",
+    "RelativePath": "api/GBSWarehouse/PurchaseRequestCreate",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Prno",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Qty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ShipmentDate",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCodeIssue",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCodeDestination",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PurchaseRequestGetList",
+    "RelativePath": "api/GBSWarehouse/PurchaseRequestGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "PutAway",
+    "RelativePath": "api/GBSWarehouse/PutAway",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LaneCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ReceiveAndPutAwayAsync",
+    "RelativePath": "api/GBSWarehouse/ReceiveAndPutAway",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LaneCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CartoonReceivedQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ReleaseBatch",
+    "RelativePath": "api/GBSWarehouse/ReleaseBatch",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.ReleaseBatchParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "RouteGetList",
+    "RelativePath": "api/GBSWarehouse/RouteGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapAssignProductToProductionLine",
+    "RelativePath": "api/GBSWarehouse/SapAssignProductToProductionLine",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapAssignProductToProductionLineParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapLaneAddList",
+    "RelativePath": "api/GBSWarehouse/SapLaneAddList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapLaneAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapLaneGetList",
+    "RelativePath": "api/GBSWarehouse/SapLaneGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapLaneGetListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapOrderTypeAddList",
+    "RelativePath": "api/GBSWarehouse/SapOrderTypeAddList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapOrderTypeAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapOrderTypeGetList",
+    "RelativePath": "api/GBSWarehouse/SapOrderTypeGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapOrderTypeGetListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapPlantAddList",
+    "RelativePath": "api/GBSWarehouse/SapPlantAddList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapPlantAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapPlantGetList",
+    "RelativePath": "api/GBSWarehouse/SapPlantGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapPlantGetListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapProductAddList",
+    "RelativePath": "api/GBSWarehouse/SapProductAddList",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapProductAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapProductGetList",
+    "RelativePath": "api/GBSWarehouse/SapProductGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapProductGetListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapProductionLineAddList",
+    "RelativePath": "api/GBSWarehouse/SapProductionLineAddList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapProductionLineAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapProductionLineGetList",
+    "RelativePath": "api/GBSWarehouse/SapProductionLineGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapProductionLineGetListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapPurchaseRequisition_Insert",
+    "RelativePath": "api/GBSWarehouse/SapPurchaseRequisition_Insert",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapPurchaseRequisitionListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapRoutesAddList",
+    "RelativePath": "api/GBSWarehouse/SapRoutesAddList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapRoutesAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapShipment_Insert",
+    "RelativePath": "api/GBSWarehouse/SapShipment_Insert",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapShipmentAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapShipmentTypesAddList",
+    "RelativePath": "api/GBSWarehouse/SapShipmentTypesAddList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapShipmentTypesAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapSignIn",
+    "RelativePath": "api/GBSWarehouse/SapSignIn",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SignInParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapStorageLocationAddList",
+    "RelativePath": "api/GBSWarehouse/SapStorageLocationAddList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapStorageLocationAddListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SapStorageLocationGetList",
+    "RelativePath": "api/GBSWarehouse/SapStorageLocationGetList",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "GBSWarehouse.Helpers.SapStorageLocationGetListParam",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ScanPallet_CheckIn",
+    "RelativePath": "api/GBSWarehouse/ScanPallet_CheckIn",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "ScanPallet_CheckOut",
+    "RelativePath": "api/GBSWarehouse/ScanPallet_CheckOut",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "SignIn",
+    "RelativePath": "api/GBSWarehouse/SignIn",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Pass",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "StorageLocationGetListByPlant",
+    "RelativePath": "api/GBSWarehouse/StorageLocationGetListByPlant",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PlantCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "UpdateBatchAsync",
+    "RelativePath": "api/GBSWarehouse/UpdateBatch",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ProductionOrderDetailsId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "newBatchQuantity",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "batchNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "productionDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "WarehouseLocation_PalletCheckIn",
+    "RelativePath": "api/GBSWarehouse/WarehouseLocation_PalletCheckIn",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "WarehouseLocation_PalletCheckOut",
+    "RelativePath": "api/GBSWarehouse/WarehouseLocation_PalletCheckOut",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ProductionQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GBSWarehouse.Controllers.GBSWarehouseController",
+    "Method": "WarehouseReceivingAsync",
+    "RelativePath": "api/GBSWarehouse/WarehouseReceiving",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserID",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceSerialNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "applang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "StorageLocationCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CartoonReceivedQty",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PalletCode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GBSWarehouse.Models.Dtos.WarehouseReceivingDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]

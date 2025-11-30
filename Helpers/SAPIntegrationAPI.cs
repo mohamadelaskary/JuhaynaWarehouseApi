@@ -205,73 +205,111 @@ namespace GBSWarehouse.Helpers
                 }
             }
         }
-        public static CreateSapOrderResponse CreateSapOrder(string PLNBEZ, string WERKS, string PWERK, string AUART, long GAMNG, string GSTRP, string GLTRP, string GMEIN, string VERID)
+        //public static CreateSapOrderResponse CreateSapOrder(string PLNBEZ, string WERKS, string PWERK, string AUART, long GAMNG, string GSTRP, string GLTRP, string GMEIN, string VERID)
+        //{
+        //    //Request
+        //    //PLNBEZ  Types   CHAR    18  0   Material Number                 Mandatory
+        //    //WERKS   Types   CHAR    4   0   Plant                           Mandatory
+        //    //PWERK   Types   CHAR    4   0   Planning plant for the order    Mandatory
+        //    //AUART   Types   CHAR    4   0   Order Type                      Mandatory
+        //    //GAMNG   Types   QUAN    13  3   Total order quantity            Mandatory
+        //    //GSTRP   Types   DATS    8   0   Basic Start Date                Mandatory
+        //    //GLTRP   Types   DATS    8   0   Basic finish date               Mandatory
+        //    //GMEIN   Types   UNIT    3   0   Base Unit of Measure            Mandatory
+        //    //VERID   Types   CHAR    4   0   Production Version              Optional
+
+        //    //Request ex
+        //    //{
+        //    //    "PLNBEZ": "000000000000010082",
+        //    //    "WERKS": "JBFP",
+        //    //    "PWERK": "JBFP",
+        //    //    "AUART": "PI03",
+        //    //    "GAMNG": 1000,
+        //    //    "GSTRP": "18.05.2023",// Basic start date in format dd.mm.yyyy
+        //    //    "GLTRP": "18.05.2024",// Basic finish date in format dd.mm.yyyy
+        //    //    "GMEIN": "CAR",
+        //    //    "VERID": "1"
+        //    //}
+
+        //    //Response
+        //    //PLNBEZ        Types   CHAR    18  0   Material Number 
+        //    //WERKS         Types   CHAR    4  0   Plant
+        //    //PWERK         Types   CHAR    4  0   Planning plant for the order
+        //    //AUART         Types   CHAR    4  0   Order Type
+        //    //GAMNG         Types   QUAN    13 3   Total order quantity
+        //    //GSTRP         Types   DATS    8  0  Basic Start Date
+        //    //GLTRP         Types   DATS    8  0  Basic finish date
+        //    //GMEIN         Types   UNIT    3  0  Base Unit of Measure
+        //    //VERID         Types   CHAR    4  0  Production Version
+        //    //AUFNR        Types   CHAR    12  0   Order Number
+        //    //messageCode Types   NUMC    3   0   Message number
+        //    //messageText Types   CHAR    10  0   Order Number Text(Created Or Failed)
+        //    //message      Types   CHAR    200 0   Message Text
+        //    //messageCode2 Types   NUMC    3   0   Message number
+        //    //messageText2 Types   CHAR    10  0   Order Number Text(Created Or Failed)
+        //    //message2      Types   CHAR    200 0   Message Text
+
+        //    //Response Example
+        //    //{
+        //    //    "plnbez": "000000000000010082",
+        //    //    "werks": "JBFP",
+        //    //    "pwerk": "JBFP",
+        //    //    "auart": "PI03",
+        //    //    "gamng": 1000.000,
+        //    //    "gstrp": "18.05.2023",
+        //    //    "gltrp": "18.05.2024",
+        //    //    "gmein": "KAR",
+        //    //    "verid": "1",
+        //    //    "aufnr": "000003092296",
+        //    //    "messageCode": 0,
+        //    //    "messageText": "Created",
+        //    //    "message": "",
+        //    //    "messageCode2": 0,
+        //    //    "messageText2": "Released Successfuly",
+        //    //    "message2": ""
+        //    //}
+
+        //    using (WebClient webClient = new WebClient())
+        //    {
+        //        string UriAddress = string.Empty;
+        //        try
+        //        {
+        //            CreateSapOrderParameters obj = new()
+        //            {
+        //                PLNBEZ = PLNBEZ,
+        //                WERKS = WERKS,
+        //                PWERK = PWERK,
+        //                AUART = AUART,
+        //                GAMNG = GAMNG,
+        //                GSTRP = GSTRP,
+        //                GLTRP = GLTRP,
+        //                GMEIN = GMEIN,
+        //                VERID = VERID
+        //            };
+
+        //            UriAddress = string.Format("http://vhjfiqasci.sap.juhayna.com:8000/sap/zgbs_create_ord");
+        //            webClient.BaseAddress = UriAddress;
+        //            webClient.Headers[HttpRequestHeader.ContentType] = "application/json; charset=utf-8";
+        //            //webClient.Headers[HttpRequestHeader.Authorization] = "Basic V00uR0JTOldNLjIwMjM=";
+        //            string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes("WM.GBS:WM.2023"));
+        //            webClient.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", credentials);
+        //            string SerialObj = JsonConvert.SerializeObject(obj);
+        //            var response = webClient.UploadString(UriAddress, SerialObj);
+        //            var responseMessage = JsonConvert.DeserializeObject<CreateSapOrderResponse>(response);
+        //            return responseMessage;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return new CreateSapOrderResponse() { messageText = "Exception Error", message = ex.Message };
+        //        }
+        //    }
+        //}
+        public static CreateSapOrderResponse CreateSapOrder(
+    string PLNBEZ, string WERKS, string PWERK, string AUART,
+    long GAMNG, string GSTRP, string GLTRP, string GMEIN, string VERID)
         {
-            //Request
-            //PLNBEZ  Types   CHAR    18  0   Material Number                 Mandatory
-            //WERKS   Types   CHAR    4   0   Plant                           Mandatory
-            //PWERK   Types   CHAR    4   0   Planning plant for the order    Mandatory
-            //AUART   Types   CHAR    4   0   Order Type                      Mandatory
-            //GAMNG   Types   QUAN    13  3   Total order quantity            Mandatory
-            //GSTRP   Types   DATS    8   0   Basic Start Date                Mandatory
-            //GLTRP   Types   DATS    8   0   Basic finish date               Mandatory
-            //GMEIN   Types   UNIT    3   0   Base Unit of Measure            Mandatory
-            //VERID   Types   CHAR    4   0   Production Version              Optional
-
-            //Request ex
-            //{
-            //    "PLNBEZ": "000000000000010082",
-            //    "WERKS": "JBFP",
-            //    "PWERK": "JBFP",
-            //    "AUART": "PI03",
-            //    "GAMNG": 1000,
-            //    "GSTRP": "18.05.2023",// Basic start date in format dd.mm.yyyy
-            //    "GLTRP": "18.05.2024",// Basic finish date in format dd.mm.yyyy
-            //    "GMEIN": "CAR",
-            //    "VERID": "1"
-            //}
-
-            //Response
-            //PLNBEZ        Types   CHAR    18  0   Material Number 
-            //WERKS         Types   CHAR    4  0   Plant
-            //PWERK         Types   CHAR    4  0   Planning plant for the order
-            //AUART         Types   CHAR    4  0   Order Type
-            //GAMNG         Types   QUAN    13 3   Total order quantity
-            //GSTRP         Types   DATS    8  0  Basic Start Date
-            //GLTRP         Types   DATS    8  0  Basic finish date
-            //GMEIN         Types   UNIT    3  0  Base Unit of Measure
-            //VERID         Types   CHAR    4  0  Production Version
-            //AUFNR        Types   CHAR    12  0   Order Number
-            //messageCode Types   NUMC    3   0   Message number
-            //messageText Types   CHAR    10  0   Order Number Text(Created Or Failed)
-            //message      Types   CHAR    200 0   Message Text
-            //messageCode2 Types   NUMC    3   0   Message number
-            //messageText2 Types   CHAR    10  0   Order Number Text(Created Or Failed)
-            //message2      Types   CHAR    200 0   Message Text
-
-            //Response Example
-            //{
-            //    "plnbez": "000000000000010082",
-            //    "werks": "JBFP",
-            //    "pwerk": "JBFP",
-            //    "auart": "PI03",
-            //    "gamng": 1000.000,
-            //    "gstrp": "18.05.2023",
-            //    "gltrp": "18.05.2024",
-            //    "gmein": "KAR",
-            //    "verid": "1",
-            //    "aufnr": "000003092296",
-            //    "messageCode": 0,
-            //    "messageText": "Created",
-            //    "message": "",
-            //    "messageCode2": 0,
-            //    "messageText2": "Released Successfuly",
-            //    "message2": ""
-            //}
-
             using (WebClient webClient = new WebClient())
             {
-                string UriAddress = string.Empty;
                 try
                 {
                     CreateSapOrderParameters obj = new()
@@ -287,23 +325,38 @@ namespace GBSWarehouse.Helpers
                         VERID = VERID
                     };
 
-                    UriAddress = string.Format("http://hanaqas.juhaynafood.ind:8000/sap/zgbs_create_ord?sap-client=300");
+                    string UriAddress = "http://vhjfiqasci.sap.juhayna.com:8000/sap/zgbs_create_ord?sap-client=300";
+
                     webClient.BaseAddress = UriAddress;
-                    webClient.Headers[HttpRequestHeader.ContentType] = "application/json; charset=utf-8";
-                    //webClient.Headers[HttpRequestHeader.Authorization] = "Basic V00uR0JTOldNLjIwMjM=";
+                    webClient.Headers[HttpRequestHeader.ContentType] = "application/json;";
+                    webClient.Encoding = Encoding.UTF8;
+
                     string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes("WM.GBS:WM.2023"));
-                    webClient.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", credentials);
+                    webClient.Headers[HttpRequestHeader.Authorization] = $"Basic {credentials}";
+
                     string SerialObj = JsonConvert.SerializeObject(obj);
-                    var response = webClient.UploadString(UriAddress, SerialObj);
+
+                    var response = webClient.UploadString(UriAddress, "POST", SerialObj);
+
                     var responseMessage = JsonConvert.DeserializeObject<CreateSapOrderResponse>(response);
-                    return responseMessage;
+
+                    return responseMessage ?? new CreateSapOrderResponse()
+                    {
+                        messageText = "Empty Response",
+                        message = "No data returned from SAP"
+                    };
                 }
                 catch (Exception ex)
                 {
-                    return new CreateSapOrderResponse() { messageText = "Exception Error", message = ex.Message };
+                    return new CreateSapOrderResponse()
+                    {
+                        messageText = "Exception Error",
+                        message = ex.Message
+                    };
                 }
             }
         }
+
         public static CloseBatchResponse CloseBatchAPI(string MATNR, string AUFNR, string MENGE, string CHARG, string HSDAT, string MEINS, string BUDAT, string WERKS, string LGORT)
         {
             //Request
@@ -386,7 +439,7 @@ namespace GBSWarehouse.Helpers
                         LGORT = LGORT
                     };
 
-                    UriAddress = string.Format("http://hanaqas.juhaynafood.ind:8000/sap/zgbs_closebatch?sap-client=300");
+                    UriAddress = string.Format("http://vhjfiqasci.sap.juhayna.com:8000/sap/zgbs_closebatch");
                     webClient.BaseAddress = UriAddress;
                     webClient.Headers[HttpRequestHeader.ContentType] = "application/json; charset=utf-8";
                     //webClient.Headers[HttpRequestHeader.Authorization] = "Basic V00uR0JTOldNLjIwMjM=";

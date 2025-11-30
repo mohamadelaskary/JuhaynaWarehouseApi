@@ -39,5 +39,8 @@ namespace GBSWarehouse.Models
         public bool? IsMobProductionStartReceiving { get; set; }
         public bool? IsMobProductionCancelReceiving { get; set; }
         public bool? IsMobShipping { get; set; }
+        public bool? IsMobUpdateOrder { get; set; }
+        public bool? IsMobCloseOrder { get; set; }
+
     }
 }

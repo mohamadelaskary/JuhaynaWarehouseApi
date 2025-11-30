@@ -1,22 +1,85 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\",
+  "WorkspaceRootPath": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\mohammad ismail laptop data\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\mohammad ismail laptop data\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\controllers\\gbswarehousecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\controllers\\gbswarehousecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:controllers\\gbswarehousecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\mohammad ismail laptop data\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\gbswarehousecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\gbswarehousecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:models\\gbswarehousecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\mohammad ismail laptop data\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\helpers\\dataclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\helpers\\dataclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:helpers\\dataclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\gbswarehouse.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:gbswarehouse.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\helpers\\responsestatushelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:helpers\\responsestatushelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\webconfigfile.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:webconfigfile.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\helpers\\sapservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:helpers\\sapservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\palletwip.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:models\\palletwip.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\batchlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:models\\batchlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\productionorderdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:models\\productionorderdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\helpers\\dbclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:helpers\\dbclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\helpers\\sapintegrationapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:helpers\\sapintegrationapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\migrations\\20250908043545_addorderdetailsidinclosebatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:migrations\\20250908043545_addorderdetailsidinclosebatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\obj\\Debug\\net7.0\\k44zeobd.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:obj\\Debug\\net7.0\\k44zeobd.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\dtos\\warehousereceivingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:models\\dtos\\warehousereceivingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Mohammad Ismail laptop data\\NBK files\\GBSAssetTrackingLightWebApi_15Sep2025\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|d:\\mohammad ismail laptop data\\gbs apis source codes\\gbs juhayna api source code\\gbs juhayna api source code\\models\\closebatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C11AC021-E322-449E-8AB5-41ACA14AAFF3}|GBSWarehouse.csproj|solutionrelative:models\\closebatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +89,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -49,54 +112,255 @@
               "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "DataClass.cs",
-              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\DataClass.cs",
-              "RelativeDocumentMoniker": "Helpers\\DataClass.cs",
-              "ToolTip": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\DataClass.cs",
-              "RelativeToolTip": "Helpers\\DataClass.cs",
-              "ViewState": "AgIAAA4CAAAAAAAAAAAmwAcCAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T08:22:18.448Z"
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "GBSWarehouseController.cs",
-              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Controllers\\GBSWarehouseController.cs",
-              "RelativeDocumentMoniker": "Controllers\\GBSWarehouseController.cs",
-              "ToolTip": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Controllers\\GBSWarehouseController.cs",
-              "RelativeToolTip": "Controllers\\GBSWarehouseController.cs",
-              "ViewState": "AgIAAOkgAAAAAAAAAADwv/AgAAA9AAAAAAAAAA==",
+              "DocumentIndex": 12,
+              "Title": "ProductionOrderDetail.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\ProductionOrderDetail.cs",
+              "RelativeDocumentMoniker": "Models\\ProductionOrderDetail.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\ProductionOrderDetail.cs",
+              "RelativeToolTip": "Models\\ProductionOrderDetail.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T07:24:22.997Z",
+              "WhenOpened": "2025-09-30T16:52:38.33Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DataClass.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\DataClass.cs",
+              "RelativeDocumentMoniker": "Helpers\\DataClass.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\DataClass.cs",
+              "RelativeToolTip": "Helpers\\DataClass.cs",
+              "ViewState": "AgIAAA4BAAAAAAAAAAAswBUBAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-23T08:22:18.448Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-12-26T10:31:39.251Z",
+              "Title": "GBSWarehouseController.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Controllers\\GBSWarehouseController.cs",
+              "RelativeDocumentMoniker": "Controllers\\GBSWarehouseController.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Controllers\\GBSWarehouseController.cs",
+              "RelativeToolTip": "Controllers\\GBSWarehouseController.cs",
+              "ViewState": "AgIAAKkNAAAAAAAAAAAawLINAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-09T16:02:39.065Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ResponseStatusHelper.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\ResponseStatusHelper.cs",
+              "RelativeDocumentMoniker": "Helpers\\ResponseStatusHelper.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\ResponseStatusHelper.cs",
+              "RelativeToolTip": "Helpers\\ResponseStatusHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAgAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-04T19:52:00.315Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "GBSWarehouseContext.cs",
-              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\GBSWarehouseContext.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\GBSWarehouseContext.cs",
               "RelativeDocumentMoniker": "Models\\GBSWarehouseContext.cs",
-              "ToolTip": "D:\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\GBSWarehouseContext.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\GBSWarehouseContext.cs",
               "RelativeToolTip": "Models\\GBSWarehouseContext.cs",
-              "ViewState": "AgIAAC8AAAAAAAAAAAA+wDkAAAA2AAAAAAAAAA==",
+              "ViewState": "AgIAADIAAAAAAAAAAIA/wEUAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-10T01:43:58.338Z"
+              "WhenOpened": "2025-09-09T16:08:19.943Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\User.cs",
+              "RelativeDocumentMoniker": "Models\\User.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\User.cs",
+              "RelativeToolTip": "Models\\User.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAmwAUAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T19:59:48.667Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "PalletWip.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\PalletWip.cs",
+              "RelativeDocumentMoniker": "Models\\PalletWip.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\PalletWip.cs",
+              "RelativeToolTip": "Models\\PalletWip.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAAwAUAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-09T16:08:46.705Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SapService.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\SapService.cs",
+              "RelativeDocumentMoniker": "Helpers\\SapService.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\SapService.cs",
+              "RelativeToolTip": "Helpers\\SapService.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAYwBEAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-04T10:28:08.159Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAACiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-12-26T10:31:39.251Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "GBSWarehouse.csproj",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\GBSWarehouse.csproj",
+              "RelativeDocumentMoniker": "GBSWarehouse.csproj",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\GBSWarehouse.csproj",
+              "RelativeToolTip": "GBSWarehouse.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-24T09:52:17.958Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "WebConfigFile.txt",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\WebConfigFile.txt",
+              "RelativeDocumentMoniker": "WebConfigFile.txt",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\WebConfigFile.txt",
+              "RelativeToolTip": "WebConfigFile.txt",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-10-29T08:09:41.96Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "Properties\\launchSettings.json",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Properties\\launchSettings.json",
+              "RelativeToolTip": "Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-09-11T21:39:49.91Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "BatchList.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\BatchList.cs",
+              "RelativeDocumentMoniker": "Models\\BatchList.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\BatchList.cs",
+              "RelativeToolTip": "Models\\BatchList.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAcAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-06T12:18:16.325Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "DBClass.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\DBClass.cs",
+              "RelativeDocumentMoniker": "Helpers\\DBClass.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\DBClass.cs",
+              "RelativeToolTip": "Helpers\\DBClass.cs",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAiwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-06T14:28:44.487Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "SAPIntegrationAPI.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\SAPIntegrationAPI.cs",
+              "RelativeDocumentMoniker": "Helpers\\SAPIntegrationAPI.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Helpers\\SAPIntegrationAPI.cs",
+              "RelativeToolTip": "Helpers\\SAPIntegrationAPI.cs",
+              "ViewState": "AgIAAHYBAAAAAAAAAAAnwGcBAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T11:33:46.643Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "20250908043545_AddOrderDetailsIdInCloseBatch.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Migrations\\20250908043545_AddOrderDetailsIdInCloseBatch.cs",
+              "RelativeDocumentMoniker": "Migrations\\20250908043545_AddOrderDetailsIdInCloseBatch.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Migrations\\20250908043545_AddOrderDetailsIdInCloseBatch.cs",
+              "RelativeToolTip": "Migrations\\20250908043545_AddOrderDetailsIdInCloseBatch.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-08T04:35:45.759Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "k44zeobd.sql",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\obj\\Debug\\net7.0\\k44zeobd.sql",
+              "RelativeDocumentMoniker": "obj\\Debug\\net7.0\\k44zeobd.sql",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\obj\\Debug\\net7.0\\k44zeobd.sql",
+              "RelativeToolTip": "obj\\Debug\\net7.0\\k44zeobd.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-09-23T20:18:28.46Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "WarehouseReceivingDto.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\Dtos\\WarehouseReceivingDto.cs",
+              "RelativeDocumentMoniker": "Models\\Dtos\\WarehouseReceivingDto.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\Dtos\\WarehouseReceivingDto.cs",
+              "RelativeToolTip": "Models\\Dtos\\WarehouseReceivingDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-23T19:10:53.19Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\NBK files\\GBSAssetTrackingLightWebApi_15Sep2025\\appsettings.json",
+              "RelativeDocumentMoniker": "..\\..\\..\\NBK files\\GBSAssetTrackingLightWebApi_15Sep2025\\appsettings.json",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\NBK files\\GBSAssetTrackingLightWebApi_15Sep2025\\appsettings.json",
+              "RelativeToolTip": "..\\..\\..\\NBK files\\GBSAssetTrackingLightWebApi_15Sep2025\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-09-15T11:13:07.595Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "CloseBatch.cs",
+              "DocumentMoniker": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\CloseBatch.cs",
+              "RelativeDocumentMoniker": "Models\\CloseBatch.cs",
+              "ToolTip": "D:\\Mohammad Ismail laptop data\\GBS Apis source codes\\GBS Juhayna API Source Code\\GBS Juhayna API Source Code\\Models\\CloseBatch.cs",
+              "RelativeToolTip": "Models\\CloseBatch.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-08T03:43:13.056Z"
             }
           ]
         }

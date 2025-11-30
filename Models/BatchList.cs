@@ -5,6 +5,7 @@ namespace GBSWarehouse.Models
 {
     public partial class BatchList
     {
+        public long ProductionOrderDetailsId { get; set; }
         public long BatchId { get; set; }
         public long? SaporderId { get; set; }
         public string BatchNo { get; set; }

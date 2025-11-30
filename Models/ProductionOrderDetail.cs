@@ -20,7 +20,7 @@ namespace GBSWarehouse.Models
         public long? UserIdUpdate { get; set; }
         public DateTime? DateTimeUpdate { get; set; }
         public string DeviceSerialNoUpdate { get; set; }
-        public bool? IsClosedBatch { get; set; }
+        public bool IsClosedBatch { get; set; } = false;
         public string BatchStatus { get; set; }
         public bool? IsReleased { get; set; }
         public long? UserIdRelease { get; set; }
